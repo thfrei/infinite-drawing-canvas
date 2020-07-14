@@ -74,7 +74,7 @@ const initFabric = () => {
       drawingOptionsEl.css('display', 'none');
     }
   });
-  //
+  
   // if (fabric.PatternBrush) {
   //     var vLinePatternBrush = new fabric.PatternBrush(canvas);
   //     vLinePatternBrush.getPatternSrc = function () {
@@ -191,8 +191,6 @@ const initFabric = () => {
         color: drawingShadowColorEl.val(),
       });
     }
-
-
   });
 
   drawingColorEl.change(function () {
