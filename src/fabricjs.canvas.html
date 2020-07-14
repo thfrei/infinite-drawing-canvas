@@ -8,9 +8,8 @@
     </style>
 </head>
 <body>
-<h2><span>Fabric.js demos</span> &middot; Free drawing</h2>
-
-<!-- 
+<h2><span>Fabric.js Demo</span> &middot; Free drawing</h2>
+<!--
 <h1>1</h1>
 <p>This is a basic zoom control, limited between 1% and 2000%. we want now to add dragging of the canvas.
     We will use ALT + DRAG, but you can change to another combination. The idea is that a mousedown with alt will
@@ -63,7 +62,7 @@
       })()
     </script>
 </div>
-<p>Ok, this is a basic setup that will allow you to control zoom and panning. There are still a couple of possible enhancement.<br/> 
+<p>Ok, this is a basic setup that will allow you to control zoom and panning. There are still a couple of possible enhancement.<br/>
 -->
 
 
@@ -92,13 +91,20 @@
 
 <h1>2</h1>
 For example we can make the wheel-zoom to center the canvas around the point where the cursor is:<br/></p>
-<div class="example">
+<div class="example" id="examplediv">
     <canvas id="step3" width="400" height="400"></canvas>
     <script type="text/javascript">
       (function () {
         var canvas = new fabric.Canvas('step3', {
-          isDrawingMode: true
+          isDrawingMode: false
         });
+
+        var canvasdiv = document.getElementsByClassName("upper-canvas")[0];
+        canvasdiv.addEventListener("touchstart", (e) => {
+          canvas.selection = false;
+          console.log('touch', e);
+        });
+
         canvas.add(new fabric.Rect({width: 50, height: 50, fill: 'blue', angle: 10}))
         canvas.add(new fabric.Circle({radius: 50, fill: 'red', top: 44, left: 80}))
         canvas.add(new fabric.Ellipse({rx: 50, ry: 10, fill: 'yellow', top: 80, left: 35}))
@@ -139,8 +145,58 @@ For example we can make the wheel-zoom to center the canvas around the point whe
         canvas.on('mouse:up', function (opt) {
           this.isDragging = false;
           this.selection = true;
-          canvas.isDrawingMode = true;
+          canvas.isDrawingMode = false;
         });
+
+// Get the position of a touch relative to the canvas
+function getTouchPos(canvasDom, touchEvent) {
+  var rect = canvasDom.getBoundingClientRect();
+  return {
+    x: touchEvent.touches[0].clientX - rect.left,
+    y: touchEvent.touches[0].clientY - rect.top
+  };
+}
+
+// touch?
+
+// pinch zoom for trackpad
+canvas.on({
+    'touch:gesture': function(e) {
+        if (e.e.touches && e.e.touches.length == 2) {
+            pausePanning = true;
+            var point = new fabric.Point(e.self.x, e.self.y);
+            if (e.self.state == "start") {
+                zoomStartScale = canvas.getZoom();
+            }
+            var delta = zoomStartScale * e.self.scale;
+            canvas.zoomToPoint(point, delta);
+            pausePanning = false;
+        }
+    },
+    'object:selected': function() {
+        pausePanning = true;
+    },
+    'selection:cleared': function() {
+        pausePanning = false;
+    },
+    'touch:drag': function(e) {
+        if (pausePanning == false && undefined != e.self.x && undefined != e.self.x) {
+            currentX = e.self.x;
+            currentY = e.self.y;
+            xChange = currentX - lastX;
+            yChange = currentY - lastY;
+
+            if( (Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
+                var delta = new fabric.Point(xChange, yChange);
+                canvas.relativePan(delta);
+            }
+
+            lastX = e.self.x;
+            lastY = e.self.y;
+        }
+    }
+})
+
       })()
     </script>
 </div>
