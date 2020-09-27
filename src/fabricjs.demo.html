@@ -1,0 +1,57 @@
+<html>
+<head>
+  <script src="../assets/jquery.3.4.1.min.js"></script>
+  <script src="../assets/jquery.hotkeys.js"></script>
+  <script src="../assets/fabric.3.6.3.min.js"></script>
+
+  <script src="./infinite-canvas.js"></script>
+  <script type="text/css" src="./style.css"></script>
+
+</head>
+<body>
+<h2><span>Fabric.js demos</span> &middot; Free drawing</h2>
+<div class="note-detail-canvas-note note-detail-printable">
+  <div id="drawing-mode-options" style="position: relative;">
+    <label for="drawing-mode-selector">Mode:</label>
+    <select id="drawing-mode-selector">
+      <option>Pencil</option>
+      <option>Circle</option>
+      <option>Spray</option>
+      <option>Pattern</option>
+      <option>Eraser</option>
+    </select><br>
+
+    <label for="drawing-line-width">Line width:</label>
+    <span class="info">30</span><input type="range" value="30" min="0" max="150" id="drawing-line-width"><br>
+
+    <label for="drawing-color">Line color:</label>
+    <input type="color" value="#005E7A" id="drawing-color"><br>
+
+    <label for="drawing-shadow-color">Shadow color:</label>
+    <input type="color" value="#005E7A" id="drawing-shadow-color"><br>
+
+    <label for="drawing-shadow-width">Shadow width:</label>
+    <span class="info">0</span><input type="range" value="0" min="0" max="50" id="drawing-shadow-width"><br>
+
+    <label for="drawing-shadow-offset">Shadow offset:</label>
+    <span class="info">0</span><input type="range" value="0" min="0" max="50" id="drawing-shadow-offset"><br>
+  </div>
+  <div style="display: inline; margin-left: 10px">
+    <button id="drawing-mode" class="btn btn-info">Cancel drawing mode</button>
+    <button id="clear-canvas" class="btn btn-info">Clear</button>
+    <button id="save-canvas" class="btn btn-info">Save</button>
+    <button id="refresh-canvas" class="btn btn-info">Refresh</button>
+    <button id="undo"><-</button>
+    <button id="redo">-></button>
+
+  </div>
+  <br/>
+  <canvas id="c" width="500" height="500" style="border:1px solid #aaa; position: absolute; touch-action:none; user-select: none;"></canvas>
+
+</div>
+
+
+<br/>
+<br/>
+</body>
+</html>
