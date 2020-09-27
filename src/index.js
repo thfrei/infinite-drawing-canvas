@@ -1,7 +1,7 @@
 import EraserBrushFactory from './EraserBrush';
 
 /**
- * 
+ * Infinite Canvas
  */
 class InfiniteCanvas {
   constructor($canvas, $parent) {
