@@ -57,9 +57,9 @@ class InfiniteCanvas {
       top: 100,
     });
     canvas.add(comicSansText);
-    var demoLine = new fabric.Line([30, 30, 150, 150], {
-      fill: 'red',
-      stroke: 'red',
+    var demoLine = new fabric.Line([30, 30, 150, 210], {
+      fill: 'green',
+      stroke: 'blue',
       strokeWidth: 5,
       selectable: false,
       evented: false,
@@ -88,6 +88,8 @@ class InfiniteCanvas {
       opt.e.preventDefault();
       opt.e.stopPropagation();
     });
+
+    canvas.on('mouse:down:before', this.handlePointerEventBefore);
 
     // TODO: fix mouse:move pan and hamer, so that it works together
     // // mouse and hammer touch pan are in conflict!!!!! // hammer does not work if mouse enabled...,
@@ -141,8 +143,6 @@ class InfiniteCanvas {
     hammer.on('pan', _throttle(this.handlePanning, 20));
     hammer.on('panend', this.handlePanEnd);
 
-    canvas.on('mouse:down:before', this.handlePointerEventBefore);
-
     return canvas;
   }
 
@@ -154,10 +154,16 @@ class InfiniteCanvas {
       console.log('mdb touch');
       canvas.isDrawingMode = false;
       canvas.selection = false;
+      // unselect any possible targets (if you start the pan on an object)
+      if (fabricEvent.target) {
+        // source: https://stackoverflow.com/a/25535052
+        canvas.deactivateAll().renderAll();
+      }
     } else if (this.recognizeInput(fabricEvent.e) === 'pen') {
       console.log('mdb pen');
       canvas.isDrawingMode = true;
     } else {
+      fabricEvent.target.selection = true;
       console.log('mdb mouse');
       console.log('DRAW mouse intention');
     }
