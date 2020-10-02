@@ -1,4 +1,6 @@
 import EraserBrushFactory from './EraserBrush';
+import _throttle from './lib/lodash.throttle';
+import _debounce from './lib/lodash.debounce';
 
 /**
  * Infinite Canvas
@@ -13,9 +15,26 @@ class InfiniteCanvas {
     this.selection;
     this.lastPosX;
     this.lastPosY;
+    this.numberOfPanEvents;
+    this.lastScale = 1;
 
-    // Canvas Mode State Machine
-    
+    this.state = {
+      IDLE: 'idle',
+      INTERACTING: 'interacting',
+      DRAGGING: 'dragging',
+      PANNING: 'panning',
+      SELECTING: 'selecting',
+      PINCH_ZOOMING: 'pinch_zooming',
+      SELECTED: 'selected,',
+    };
+
+    // bind methods to this
+    this.resizeCanvas = this.resizeCanvas.bind(this);
+    this.handlePinch = this.handlePinch.bind(this);
+    this.handlePinchEnd = this.handlePinchEnd.bind(this);
+    this.handlePanStart = this.handlePanStart.bind(this);
+    this.handlePanning = this.handlePanning.bind(this);
+    this.handlePanEnd = this.handlePanEnd.bind(this);
   }
 
   initFabric() {
@@ -26,11 +45,12 @@ class InfiniteCanvas {
       isDrawingMode: true,
       // allowTouchScrolling: true,
     });
+    this.$canvas = canvas;
     fabric.Object.prototype.transparentCorners = false;
     this.fabricInitialized = true;
 
     var comicSansText = new fabric.Text("I'm in Comic Sans", {
-      fontFamily: 'Comic',
+      fontFamily: 'Comic Sans MS',
       left: 100,
       top: 100,
     });
@@ -41,8 +61,9 @@ class InfiniteCanvas {
       self.saveData();
     }
     // canvas.on('after:render', afterRender);
+    
     const canvasNote = this.$parent.get(0);
-    new ResizeObserver(this.resizeCanvas.bind(this, canvas)).observe(
+    new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(
       canvasNote,
     ); // this leads to a eraserbrush remaining...
 
@@ -100,67 +121,89 @@ class InfiniteCanvas {
 
     //hammer start
     // ----
-
     var hammer = new Hammer.Manager(canvas.upperCanvasEl);
     var pinch = new Hammer.Pinch();
     var pan = new Hammer.Pan();
 
     hammer.add([pinch, pan]);
 
-    hammer.on('pinch', function (ev) {
-      console.log('pinch', ev);
-      let point = null;
-      point = new fabric.Point(ev.center.x, ev.center.y);
-      canvas.zoomToPoint(point, ev.scale);
-    });
+    hammer.on('pinchmove', _throttle(this.handlePinch, 20));
+    // the pinchend call must be debounced, since a pinchmove event might 
+    // occur after a couple of ms after the actual pinchend event. With the
+    // debounce, it is garuanted, that this.lastScale and the scale for the
+    // next pinch zoom is set correctly
+    hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
 
-    hammer.on('pinchend', function (ev) {
-      console.log('pinchend', ev);
-      // reactivate drawing mode after the pinch is over
-    });
+    hammer.on('panstart', this.handlePanStart);
 
-    hammer.on('panstart', function (e) {
-      console.log('panstart', e);
-      if (e.pointerType === 'touch') {
-        canvas.isDragging = true;
-        canvas.selection = false;
-        self.lastPosX = e.center.x;
-        self.lastPosY = e.center.y;
-      }
-    });
+    hammer.on('pan', _throttle(this.handlePanning, 20));
 
-    hammer.on('pan', function (e) {
-      console.log('pan', e);
-      if (e.pointerType === 'touch') {
-        if (canvas.isDragging) {
-          var vpt = canvas.viewportTransform;
-          vpt[4] += e.center.x - self.lastPosX;
-          vpt[5] += e.center.y - self.lastPosY;
-          canvas.requestRenderAll();
-          self.lastPosX = e.center.x;
-          self.lastPosY = e.center.y;
-        }
-      }
-    });
-
-    hammer.on('panend', function (e) {
-      console.log('panend', e);
-      if (e.pointerType === 'touch') {
-        // on mouse up we want to recalculate new interaction
-        // for all objects, so we call setViewportTransform
-        canvas.setViewportTransform(canvas.viewportTransform);
-        canvas.isDragging = false;
-        canvas.selection = true;
-      }
-    });
+    hammer.on('panend', this.handlePanEnd);
 
     canvas.on('mouse:down:before', function (o) {
       console.log('mdb', o);
+      // recognize touch
       if (o.e.touches && o.e.touches.length >= 1) {
         canvas.isDrawingMode = false;
         this.selection = false;
       }
     });
+  }
+
+  handlePinch(e) {
+    const canvas = this.$canvas;
+    console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
+    let point = null;
+    point = new fabric.Point(e.center.x, e.center.y);
+    canvas.zoomToPoint(point, this.lastScale * e.scale);
+  }
+
+  handlePinchEnd(e) {
+    this.lastScale = this.lastScale * e.scale;
+    console.log('pinchend', this.lastScale, e.scale, e);
+    // reactivate drawing mode after the pinch is over
+  }
+
+  handlePanStart(e) {
+    const canvas = this.$canvas;
+    console.log('panstart', e);
+
+    if (e.pointerType === 'touch') {
+      canvas.isDragging = true;
+      canvas.selection = false;
+      this.lastPosX = e.center.x;
+      this.lastPosY = e.center.y;
+
+      canvas.isDrawingMode = false;
+      this.selection = false;
+    }
+  }
+
+  handlePanning(e) {
+    const canvas = this.$canvas;
+    console.log('pan', e);
+    if (e.pointerType === 'touch') {
+      if (canvas.isDragging) {
+        var vpt = canvas.viewportTransform;
+        vpt[4] += e.center.x - this.lastPosX;
+        vpt[5] += e.center.y - this.lastPosY;
+        canvas.requestRenderAll();
+        this.lastPosX = e.center.x;
+        this.lastPosY = e.center.y;
+      }
+    }
+  }
+
+  handlePanEnd(e) {
+    const canvas = this.$canvas;
+    console.log('panend', e);
+    if (e.pointerType === 'touch') {
+      // on mouse up we want to recalculate new interaction
+      // for all objects, so we call setViewportTransform
+      canvas.setViewportTransform(canvas.viewportTransform);
+      canvas.isDragging = false;
+      canvas.selection = true;
+    }
   }
 
   /**
@@ -198,7 +241,8 @@ class InfiniteCanvas {
   }
 
   // detect parent div size change
-  resizeCanvas(canvas) {
+  resizeCanvas() {
+    const canvas = this.$canvas;
     const width = this.$parent.width();
     const height = this.$parent.height();
     console.log(`setting canvas to ${width} x ${height}px`);
