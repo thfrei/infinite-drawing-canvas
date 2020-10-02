@@ -29,6 +29,7 @@ class InfiniteCanvas {
     };
 
     // bind methods to this
+    this.handlePointerEventBefore = this.handlePointerEventBefore.bind(this);
     this.resizeCanvas = this.resizeCanvas.bind(this);
     this.handlePinch = this.handlePinch.bind(this);
     this.handlePinchEnd = this.handlePinchEnd.bind(this);
@@ -49,23 +50,29 @@ class InfiniteCanvas {
     fabric.Object.prototype.transparentCorners = false;
     this.fabricInitialized = true;
 
+    // Add Demo Content
     var comicSansText = new fabric.Text("I'm in Comic Sans", {
       fontFamily: 'Comic Sans MS',
       left: 100,
       top: 100,
     });
     canvas.add(comicSansText);
+    var demoLine = new fabric.Line([30, 30, 150, 150], {
+      fill: 'red',
+      stroke: 'red',
+      strokeWidth: 5,
+      selectable: false,
+      evented: false,
+    });
+    canvas.add(demoLine);
 
     function afterRender() {
       console.log('after:render');
-      self.saveData();
     }
-    // canvas.on('after:render', afterRender);
-    
+    canvas.on('after:render', _debounce(afterRender, 1000));
+
     const canvasNote = this.$parent.get(0);
-    new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(
-      canvasNote,
-    ); // this leads to a eraserbrush remaining...
+    new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
 
     // initialize buttons
     this.initButtons(canvas);
@@ -115,10 +122,6 @@ class InfiniteCanvas {
     //   canvas.selection = true;
     // });
 
-    canvas.on('touch:gesture', (opt) => {
-      console.log('ts');
-    });
-
     //hammer start
     // ----
     var hammer = new Hammer.Manager(canvas.upperCanvasEl);
@@ -128,26 +131,36 @@ class InfiniteCanvas {
     hammer.add([pinch, pan]);
 
     hammer.on('pinchmove', _throttle(this.handlePinch, 20));
-    // the pinchend call must be debounced, since a pinchmove event might 
+    // the pinchend call must be debounced, since a pinchmove event might
     // occur after a couple of ms after the actual pinchend event. With the
     // debounce, it is garuanted, that this.lastScale and the scale for the
     // next pinch zoom is set correctly
     hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
 
     hammer.on('panstart', this.handlePanStart);
-
     hammer.on('pan', _throttle(this.handlePanning, 20));
-
     hammer.on('panend', this.handlePanEnd);
 
-    canvas.on('mouse:down:before', function (o) {
-      console.log('mdb', o);
-      // recognize touch
-      if (o.e.touches && o.e.touches.length >= 1) {
-        canvas.isDrawingMode = false;
-        this.selection = false;
-      }
-    });
+    canvas.on('mouse:down:before', this.handlePointerEventBefore);
+
+    return canvas;
+  }
+
+  handlePointerEventBefore(fabricEvent) {
+    const canvas = this.$canvas;
+    console.log('mdb', fabricEvent, fabricEvent.e);
+    // recognize touch
+    if (this.recognizeInput(fabricEvent.e) === 'touch') {
+      console.log('mdb touch');
+      canvas.isDrawingMode = false;
+      canvas.selection = false;
+    } else if (this.recognizeInput(fabricEvent.e) === 'pen') {
+      console.log('mdb pen');
+      canvas.isDrawingMode = true;
+    } else {
+      console.log('mdb mouse');
+      console.log('DRAW mouse intention');
+    }
   }
 
   handlePinch(e) {
@@ -169,20 +182,21 @@ class InfiniteCanvas {
     console.log('panstart', e);
 
     if (e.pointerType === 'touch') {
+      canvas.isDrawingMode = false;
       canvas.isDragging = true;
       canvas.selection = false;
+      this.selection = false;
       this.lastPosX = e.center.x;
       this.lastPosY = e.center.y;
-
-      canvas.isDrawingMode = false;
-      this.selection = false;
     }
   }
 
   handlePanning(e) {
     const canvas = this.$canvas;
-    console.log('pan', e);
+    console.log('panning', e);
+
     if (e.pointerType === 'touch') {
+      console.log('pan', e);
       if (canvas.isDragging) {
         var vpt = canvas.viewportTransform;
         vpt[4] += e.center.x - this.lastPosX;
@@ -197,6 +211,7 @@ class InfiniteCanvas {
   handlePanEnd(e) {
     const canvas = this.$canvas;
     console.log('panend', e);
+
     if (e.pointerType === 'touch') {
       // on mouse up we want to recalculate new interaction
       // for all objects, so we call setViewportTransform
@@ -208,35 +223,35 @@ class InfiniteCanvas {
 
   /**
    *
-   * @param {PointerEvent} e
+   * @param {FabricPointerEvent} e
    */
   recognizeInput(e) {
-    const touch = 'touch';
-    const pen = 'pen';
-    const mouse = 'mouse';
-    console.log('recognizeInput Touchevent', touchEvent);
+    const TOUCH = 'touch';
+    const PEN = 'pen';
+    const MOUSE = 'mouse';
+    console.log('recognizeInput Touchevent', e);
 
     if (e.touches) {
       if (e.touches.length > 1) {
         // most likely pinch, since two fingers, aka touch inputs
-        console.log('recognizeInput', touch);
-        return touch;
+        console.log('recognizeInput', TOUCH);
+        return TOUCH;
       }
       if (e.touches.length === 1) {
         // now it may be pen or one finger
         const touchEvent = e.touches[0] || {};
         console.log('recognizeInput Touchevent', touchEvent);
         if (touchEvent.radiusX === 0.5 && touchEvent.radiusY === 0.5) {
-          console.log('recognizeInput', pen);
-          return pen;
+          console.log('recognizeInput', PEN);
+          return PEN;
         } else {
-          console.log('recognizeInput', touch);
-          return touch;
+          console.log('recognizeInput', TOUCH);
+          return TOUCH;
         }
       }
     } else {
-      console.log('recognizeInput', mouse);
-      return mouse;
+      console.log('recognizeInput', MOUSE);
+      return MOUSE;
     }
   }
 
