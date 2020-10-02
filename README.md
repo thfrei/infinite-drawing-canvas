@@ -1,6 +1,9 @@
 # infinite-drawing-canvas
 Infinite canvas that allows drawing with pen and pinch zoom. It should feel more ore less like drawing in an app like OneNote, Krita or other, pen-enabled apps.
 
+Demo
+
+![demo](doc/idc-demo.gif)
 
 # Prior Art
 
