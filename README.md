@@ -36,3 +36,9 @@ Demo
 * Add scrollbars to canvas: https://stackoverflow.com/questions/22742067/how-to-add-scrollbars-to-a-potentially-infinite-canvas-using-fabric-js/22792461
 * Free Drawing fabric.js: http://fabricjs.com/freedrawing
 * Pen Support in browser: https://patrickhlauke.github.io/touch/tracker/multi-touch-tracker-pointer-hud.html
+* Minimalistic Shapes Editor: https://github.com/danielktaylor/fabric-js-editor
+* React: Diagramming with react and fabric.js: https://github.com/salgum1114/react-design-editor
+* Samples of Text-Editing: https://jsfiddle.net/gislef/Lvfpq57h/
+* PoC of Connectors and Ports for Diagrams with fabric: https://robferguson.org/blog/2016/01/21/adding-support-for-ports-and-connectors-to-fabric-js/
+  * https://github.com/Robinyo/my-2d-diagram-editor
+* 

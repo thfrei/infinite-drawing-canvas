@@ -15,8 +15,18 @@ class InfiniteCanvas {
     this.selection;
     this.lastPosX;
     this.lastPosY;
+    this.startPosX = 0;
+    this.startPosY = 0;
     this.numberOfPanEvents;
     this.lastScale = 1;
+    this.fonts = [
+      'Times New Roman',
+      'Arial',
+      'Verdana',
+      'Calibri',
+      'Consolas',
+      'Comic Sans MS',
+    ];
 
     this.state = {
       IDLE: 'idle',
@@ -40,15 +50,15 @@ class InfiniteCanvas {
 
   initFabric() {
     const canvasElement = this.$canvas.get(0); // fabric.Canvas requires HTMLElement
+    this.canvasElement = canvasElement;
 
     const self = this;
     const canvas = new fabric.Canvas(canvasElement, {
       isDrawingMode: true,
-      // allowTouchScrolling: true,
+      allowTouchScrolling: true,
     });
     this.$canvas = canvas;
     fabric.Object.prototype.transparentCorners = false;
-    this.fabricInitialized = true;
 
     // Add Demo Content
     var comicSansText = new fabric.Text("I'm in Comic Sans", {
@@ -66,79 +76,55 @@ class InfiniteCanvas {
     });
     canvas.add(demoLine);
 
-    function afterRender() {
-      console.log('after:render');
-    }
-    canvas.on('after:render', _debounce(afterRender, 1000));
+    // Add BG
+    var bg = new fabric.Rect({
+      width: 1500,
+      height: 1500,
+      stroke: 'Fuchsia',
+      strokeWidth: 10,
+      fill: '',
+      evented: false,
+      selectable: false,
+    });
+    bg.fill = new fabric.Pattern(
+      {
+        source:
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAASElEQVQ4y2NkYGD4z0A6+M3AwMBKrGJWBgYGZiibEQ0zIInDaCaoelYyHYcX/GeitomjBo4aOGrgQBj4b7RwGFwGsjAwMDAAAD2/BjgezgsZAAAAAElFTkSuQmCC',
+      },
+      function () {
+        bg.dirty = true;
+        canvas.requestRenderAll();
+      },
+    );
+    bg.canvas = canvas;
+    canvas.backgroundImage = bg;
 
+    // Resizeing
     const canvasNote = this.$parent.get(0);
     new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
 
-    // initialize buttons
+    // Buttons
     this.initButtons(canvas);
     this.initPens(canvas);
 
-    canvas.on('mouse:wheel', function (opt) {
-      var delta = opt.e.deltaY;
-      var zoom = canvas.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.01) zoom = 0.01;
-      canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    });
-
+    // Handle different input devices: Touch (Finger), Pen, Mouse
     canvas.on('mouse:down:before', this.handlePointerEventBefore);
 
-    // TODO: fix mouse:move pan and hamer, so that it works together
-    // // mouse and hammer touch pan are in conflict!!!!! // hammer does not work if mouse enabled...,
-    // canvas.on('mouse:down', function (opt) {
-    //   console.log('mouse:down', opt);
-    //   var evt = opt.e;
-    //   if (evt.altKey === true) {
-    //     canvas.isDragging = true;
-    //     canvas.selection = false;
-    //     self.lastPosX = evt.clientX;
-    //     self.lastPosY = evt.clientY;
-    //   }
-    // });
-    // canvas.on('mouse:move', function (opt) {
-    //   console.log('mouse:move', opt);
-    //   if (canvas.isDragging) {
-    //     var e = opt.e;
-    //     var vpt = canvas.viewportTransform;
-    //     vpt[4] += e.clientX - self.lastPosX;
-    //     vpt[5] += e.clientY - self.lastPosY;
-    //     canvas.requestRenderAll();
-    //     self.lastPosX = e.clientX;
-    //     self.lastPosY = e.clientY;
-    //   }
-    // });
-    // canvas.on('mouse:up', function (opt) {
-    //   console.log('mouse:up', opt);
-    //   // on mouse up we want to recalculate new interaction
-    //   // for all objects, so we call setViewportTransform
-    //   canvas.setViewportTransform(this.viewportTransform);
-    //   canvas.isDragging = false;
-    //   canvas.selection = true;
-    // });
-
-    //hammer start
-    // ----
     var hammer = new Hammer.Manager(canvas.upperCanvasEl);
     var pinch = new Hammer.Pinch();
     var pan = new Hammer.Pan();
-
     hammer.add([pinch, pan]);
 
-    hammer.on('pinchmove', _throttle(this.handlePinch, 20));
-    // the pinchend call must be debounced, since a pinchmove event might
-    // occur after a couple of ms after the actual pinchend event. With the
-    // debounce, it is garuanted, that this.lastScale and the scale for the
-    // next pinch zoom is set correctly
-    hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
+    // // Zoom (Pinch)
+    // hammer.on('pinchmove', _throttle(this.handlePinch, 20));
+    // // the pinchend call must be debounced, since a pinchmove event might
+    // // occur after a couple of ms after the actual pinchend event. With the
+    // // debounce, it is garuanted, that this.lastScale and the scale for the
+    // // next pinch zoom is set correctly
+    // hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
 
+    // Move Canvas
+    // TODO: Paning does not work correctl! Panning should move the underlying div and move the scrollbars!
     hammer.on('panstart', this.handlePanStart);
     hammer.on('pan', _throttle(this.handlePanning, 20));
     hammer.on('panend', this.handlePanEnd);
@@ -155,7 +141,7 @@ class InfiniteCanvas {
       canvas.isDrawingMode = false;
       canvas.selection = false;
       // unselect any possible targets (if you start the pan on an object)
-      if (fabricEvent.target) {
+      if (fabricEvent.target && canvas) {
         // source: https://stackoverflow.com/a/25535052
         canvas.deactivateAll().renderAll();
       }
@@ -163,7 +149,6 @@ class InfiniteCanvas {
       console.log('mdb pen');
       canvas.isDrawingMode = true;
     } else {
-      fabricEvent.target.selection = true;
       console.log('mdb mouse');
       console.log('DRAW mouse intention');
     }
@@ -192,8 +177,10 @@ class InfiniteCanvas {
       canvas.isDragging = true;
       canvas.selection = false;
       this.selection = false;
-      this.lastPosX = e.center.x;
-      this.lastPosY = e.center.y;
+
+      var scrollContainer = $('#parentContainer').get(0);
+      this.startPosX = scrollContainer.scrollLeft;
+      this.startPosY = scrollContainer.scrollTop;
     }
   }
 
@@ -204,12 +191,23 @@ class InfiniteCanvas {
     if (e.pointerType === 'touch') {
       console.log('pan', e);
       if (canvas.isDragging) {
-        var vpt = canvas.viewportTransform;
-        vpt[4] += e.center.x - this.lastPosX;
-        vpt[5] += e.center.y - this.lastPosY;
+        // original paning
+        // var vpt = canvas.viewportTransform;
+        // vpt[4] += e.center.x - this.lastPosX;
+        // vpt[5] += e.center.y - this.lastPosY;
+        // canvas.requestRenderAll();
+
+        // scrolltest
+        const panMultiplier = 1.3;
+        const dx = this.startPosX - e.deltaX * panMultiplier;
+        const dy = this.startPosY - e.deltaY * panMultiplier;
+        // var scrollContainer = document.getElementById('canvasContainer');
+        var scrollContainer = $('#parentContainer');
+        // scrollContainer.style.transform =
+        //   'translate(' + dx + 'px, ' + dy + 'px)';
+        scrollContainer.scrollLeft(dx);
+        scrollContainer.scrollTop(dy);
         canvas.requestRenderAll();
-        this.lastPosX = e.center.x;
-        this.lastPosY = e.center.y;
       }
     }
   }
@@ -221,9 +219,13 @@ class InfiniteCanvas {
     if (e.pointerType === 'touch') {
       // on mouse up we want to recalculate new interaction
       // for all objects, so we call setViewportTransform
-      canvas.setViewportTransform(canvas.viewportTransform);
+      // canvas.setViewportTransform(canvas.viewportTransform);
       canvas.isDragging = false;
       canvas.selection = true;
+
+      var scrollContainer = $('#parentContainer').get(0);
+      this.startPosX = scrollContainer.scrollLeft;
+      this.startPosY = scrollContainer.scrollTop;
     }
   }
 
@@ -402,5 +404,16 @@ setTimeout(() => {
     $('.canvasElement'),
     $('#parentContainer'),
   );
-  myCanvas.initFabric();
+  const canvas = myCanvas.initFabric();
+
+  
+  var scrollContainer =  document.getElementById("canvasContainer")
+  scrollContainer.scrollLeft += 100;
+  scrollContainer.scrollTop += 400;
+
+  // After Render
+  function afterRender() {
+    console.log('after:render outside');
+  }
+  canvas.on('after:render', _debounce(afterRender, 1000));
 }, 1000);
