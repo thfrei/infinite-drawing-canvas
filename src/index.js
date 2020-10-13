@@ -64,10 +64,10 @@ class InfiniteCanvas {
     this.addDemoContent(canvas);
     this.addBg(canvas);
 
-    // Resizing  
+    // Resizing
     // FIXME: canvas should only enlarge, maybe we dont even need, since canvas will scroll behind parent!
-    // const canvasNote = this.$parent.get(0);
-    // new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
+    const canvasNote = this.$parent.get(0);
+    new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
 
     // Buttons
     this.initButtons(canvas);
@@ -81,7 +81,7 @@ class InfiniteCanvas {
     var pan = new Hammer.Pan();
     hammer.add([pinch, pan]);
 
-    // Zoom (Pinch) 
+    // Zoom (Pinch)
     // FIXME: not working
     hammer.on('pinchmove', _throttle(this.handlePinch, 20));
     // the pinchend call must be debounced, since a pinchmove event might
@@ -268,10 +268,10 @@ class InfiniteCanvas {
     const width = this.$parent.width();
     const height = this.$parent.height();
     console.log(`setting canvas to ${width} x ${height}px`);
-    canvas.setWidth(width);
-    canvas.setHeight(height);
-    // canvas.setWidth(1500);
-    // canvas.setHeight(1500);
+    // canvas.setWidth(width);
+    // canvas.setHeight(height);
+    canvas.setWidth(1500);
+    canvas.setHeight(1500);
     canvas.renderAll();
   }
 
@@ -405,7 +405,7 @@ setTimeout(() => {
   );
   const canvas = myCanvas.initFabric();
 
-  
+
   var scrollContainer =  document.getElementById("canvasContainer")
   scrollContainer.scrollLeft += 100;
   scrollContainer.scrollTop += 400;
