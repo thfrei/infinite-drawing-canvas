@@ -1,3 +1,7 @@
-vscode:
-  extensions:
-    - ritwickdey.LiveServer@5.6.1:5Mhl1RgVVDcIym163x8r+w==
+tasks:
+  - before: nvm install 12 && nvm use 12
+    init: npm ci
+    command: npm run start
+ports:
+  - port: 8000
+    onOpen: open-preview
