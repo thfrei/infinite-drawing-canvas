@@ -61,6 +61,44 @@ class InfiniteCanvas {
     fabric.Object.prototype.transparentCorners = false;
 
     // Add Demo Content
+    this.addDemoContent(canvas);
+    this.addBg(canvas);
+
+    // Resizing  
+    // FIXME: canvas should only enlarge, maybe we dont even need, since canvas will scroll behind parent!
+    // const canvasNote = this.$parent.get(0);
+    // new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
+
+    // Buttons
+    this.initButtons(canvas);
+    this.initPens(canvas);
+
+    // Handle different input devices: Touch (Finger), Pen, Mouse
+    canvas.on('mouse:down:before', this.handlePointerEventBefore);
+
+    var hammer = new Hammer.Manager(canvas.upperCanvasEl);
+    var pinch = new Hammer.Pinch();
+    var pan = new Hammer.Pan();
+    hammer.add([pinch, pan]);
+
+    // Zoom (Pinch) 
+    // FIXME: not working
+    hammer.on('pinchmove', _throttle(this.handlePinch, 20));
+    // the pinchend call must be debounced, since a pinchmove event might
+    // occur after a couple of ms after the actual pinchend event. With the
+    // debounce, it is garuanted, that this.lastScale and the scale for the
+    // next pinch zoom is set correctly
+    hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
+
+    // Move Canvas
+    hammer.on('panstart', this.handlePanStart);
+    hammer.on('pan', this.handlePanning);
+    hammer.on('panend', this.handlePanEnd);
+
+    return canvas;
+  }
+
+  addDemoContent(canvas) {
     var comicSansText = new fabric.Text("I'm in Comic Sans", {
       fontFamily: 'Comic Sans MS',
       left: 100,
@@ -75,7 +113,9 @@ class InfiniteCanvas {
       evented: false,
     });
     canvas.add(demoLine);
+  }
 
+  addBg(canvas) {
     // Add BG
     var bg = new fabric.Rect({
       width: 1500,
@@ -98,38 +138,6 @@ class InfiniteCanvas {
     );
     bg.canvas = canvas;
     canvas.backgroundImage = bg;
-
-    // Resizeing
-    const canvasNote = this.$parent.get(0);
-    new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
-
-    // Buttons
-    this.initButtons(canvas);
-    this.initPens(canvas);
-
-    // Handle different input devices: Touch (Finger), Pen, Mouse
-    canvas.on('mouse:down:before', this.handlePointerEventBefore);
-
-    var hammer = new Hammer.Manager(canvas.upperCanvasEl);
-    var pinch = new Hammer.Pinch();
-    var pan = new Hammer.Pan();
-    hammer.add([pinch, pan]);
-
-    // // Zoom (Pinch)
-    // hammer.on('pinchmove', _throttle(this.handlePinch, 20));
-    // // the pinchend call must be debounced, since a pinchmove event might
-    // // occur after a couple of ms after the actual pinchend event. With the
-    // // debounce, it is garuanted, that this.lastScale and the scale for the
-    // // next pinch zoom is set correctly
-    // hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
-
-    // Move Canvas
-    // TODO: Paning does not work correctl! Panning should move the underlying div and move the scrollbars!
-    hammer.on('panstart', this.handlePanStart);
-    hammer.on('pan', _throttle(this.handlePanning, 20));
-    hammer.on('panend', this.handlePanEnd);
-
-    return canvas;
   }
 
   handlePointerEventBefore(fabricEvent) {
@@ -191,20 +199,11 @@ class InfiniteCanvas {
     if (e.pointerType === 'touch') {
       console.log('pan', e);
       if (canvas.isDragging) {
-        // original paning
-        // var vpt = canvas.viewportTransform;
-        // vpt[4] += e.center.x - this.lastPosX;
-        // vpt[5] += e.center.y - this.lastPosY;
-        // canvas.requestRenderAll();
-
         // scrolltest
         const panMultiplier = 1.3;
         const dx = this.startPosX - e.deltaX * panMultiplier;
         const dy = this.startPosY - e.deltaY * panMultiplier;
-        // var scrollContainer = document.getElementById('canvasContainer');
         var scrollContainer = $('#parentContainer');
-        // scrollContainer.style.transform =
-        //   'translate(' + dx + 'px, ' + dy + 'px)';
         scrollContainer.scrollLeft(dx);
         scrollContainer.scrollTop(dy);
         canvas.requestRenderAll();
@@ -269,10 +268,10 @@ class InfiniteCanvas {
     const width = this.$parent.width();
     const height = this.$parent.height();
     console.log(`setting canvas to ${width} x ${height}px`);
-    // canvas.setWidth(width);
-    // canvas.setHeight(height);
-    canvas.setWidth(1500);
-    canvas.setHeight(1500);
+    canvas.setWidth(width);
+    canvas.setHeight(height);
+    // canvas.setWidth(1500);
+    // canvas.setHeight(1500);
     canvas.renderAll();
   }
 
