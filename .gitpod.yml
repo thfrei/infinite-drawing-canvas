@@ -1,7 +1,7 @@
 tasks:
   - before: nvm install 12 && nvm use 12
     init: npm ci
-    command: npm run start
+    command: npm run dev -- --public "$(gp url 8080 | sed 's+https://++'):443"
 ports:
   - port: 8000
     onOpen: open-preview
