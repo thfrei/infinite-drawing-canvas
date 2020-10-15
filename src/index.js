@@ -166,7 +166,8 @@ class InfiniteCanvas {
     const canvas = this.$canvas;
     console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
     let point = null;
-    point = new fabric.Point(e.center.x, e.center.y);
+    point = new fabric.Point(0, 0);
+    // point = new fabric.Point(e.center.x, e.center.y);
     canvas.zoomToPoint(point, this.lastScale * e.scale);
   }
 
@@ -200,7 +201,7 @@ class InfiniteCanvas {
       console.log('pan', e);
       if (canvas.isDragging) {
         // scrolltest
-        const panMultiplier = 1.3;
+        const panMultiplier = 1.0;
         const dx = this.startPosX - e.deltaX * panMultiplier;
         const dy = this.startPosY - e.deltaY * panMultiplier;
         var scrollContainer = $('#parentContainer');
@@ -211,11 +212,27 @@ class InfiniteCanvas {
     }
   }
 
-  handlePanEnd(e) {
+  async handlePanEnd(e) {
     const canvas = this.$canvas;
     console.log('panend', e);
 
     if (e.pointerType === 'touch') {
+      // take momentum of panning to do it once panning is finished
+      // let deltaX = e.deltaX;
+      // let deltaY = e.deltaY;
+      // for(let v = Math.abs(e.overallVelocity); v>0; v=v-0.1) {
+      //   if (deltaX > 0) {
+      //     deltaX = e.deltaX + e.deltaX * v;
+      //   } else {
+      //     deltaX = e.deltaX - e.deltaX * v;
+      //   }
+      //   deltaY = e.deltaY + e.deltaY * v;
+      //   const newEvent = {...e, overallVelocity: v, deltaX, deltaY};
+      //   console.log('vel', v, deltaX, deltaY, newEvent);
+      //   this.handlePanning(newEvent);
+      //   await this.sleep(1000);
+      // }
+      
       // on mouse up we want to recalculate new interaction
       // for all objects, so we call setViewportTransform
       // canvas.setViewportTransform(canvas.viewportTransform);
@@ -226,6 +243,12 @@ class InfiniteCanvas {
       this.startPosX = scrollContainer.scrollLeft;
       this.startPosY = scrollContainer.scrollTop;
     }
+  }
+
+  sleep(time) {
+    return new Promise(resolve => {
+      setTimeout(resolve, time);
+    })
   }
 
   /**
