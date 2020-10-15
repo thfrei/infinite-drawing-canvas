@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/thfrei/infinite-drawing-canvas)
+
 # infinite-drawing-canvas
 Infinite canvas that allows drawing with pen and pinch zoom. It should feel more ore less like drawing in an app like OneNote, Krita or other, pen-enabled apps.
 
