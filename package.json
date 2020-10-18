@@ -4,6 +4,7 @@
   "description": "canvas that allows infinite drawing with stylus support and pressure sensitivity",
   "main": "index.js",
   "scripts": {
+    "start": "npm run dev",
     "dev": "webpack-dev-server",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
