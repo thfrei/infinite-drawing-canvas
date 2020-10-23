@@ -9,6 +9,7 @@ export const initButtons = (self) => {
   var saveCanvas = $('#save-canvas'),
     refreshCanvas = $('#refresh-canvas'),
     zoom100 = $('#zoom-100'),
+    showSVG = $('#show-svg'),
     clearEl = $('#clear-canvas'),
     undo = $('#undo'),
     redo = $('#redo');
@@ -73,6 +74,14 @@ export const initButtons = (self) => {
     canvas.loadFromJSON(canvasContent, () => {
       canvas.renderAll();
     });
+  });
+
+  showSVG.on('click', () => {
+    console.log('showSVG');
+    const svg = self.$canvas.toSVG();
+    const imageSrc = `data:image/svg+xml;utf8,${svg}`;
+    // $('#svgImage').html(`<img src="${imageSrc}" height="100" />`);
+    $('#svgImage').html(`${svg}`);
   });
 };
 
