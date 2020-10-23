@@ -1,4 +1,3 @@
-import EraserBrushFactory from './EraserBrush';
 import _throttle from './lib/lodash.throttle';
 import _debounce from './lib/lodash.debounce';
 import { initButtons, initPens } from './gui.js';
@@ -7,8 +6,9 @@ import { initButtons, initPens } from './gui.js';
  * Infinite Canvas
  */
 class InfiniteCanvas {
-  constructor($canvas, $parent) {
+  constructor($canvas, $parent, $canvasContainer) {
     this.$canvas = $canvas;
+    this.$canvasContainer = $canvasContainer;
     this.$parent = $parent;
 
     // Canvas
@@ -28,6 +28,8 @@ class InfiniteCanvas {
       'Consolas',
       'Comic Sans MS',
     ];
+    this.width = this.scaledWidth = 1500; //px
+    this.height = this.scaledHeight = 1500; //px
 
     this.state = {
       IDLE: 'idle',
@@ -67,11 +69,11 @@ class InfiniteCanvas {
 
     // Resizing
     // FIXME: canvas should only enlarge, maybe we dont even need, since canvas will scroll behind parent!
-    const canvasNote = this.$parent.get(0);
-    new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
+    // const canvasNote = this.$parent.get(0);
+    // new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
 
     // Buttons
-    initButtons(canvas);
+    initButtons(this);
     initPens(canvas);
 
     // Handle different input devices: Touch (Finger), Pen, Mouse
@@ -84,6 +86,7 @@ class InfiniteCanvas {
 
     // Zoom (Pinch)
     // FIXME: not working
+    // Problem: Somehow eraser planes from matched do not overlay and then do not erase
     hammer.on('pinchmove', _throttle(this.handlePinch, 20));
     // the pinchend call must be debounced, since a pinchmove event might
     // occur after a couple of ms after the actual pinchend event. With the
@@ -164,6 +167,7 @@ class InfiniteCanvas {
   }
 
   handlePinch(e) {
+    console.log('hp', e);
     const canvas = this.$canvas;
     console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
     let point = null;
@@ -173,8 +177,23 @@ class InfiniteCanvas {
   }
 
   handlePinchEnd(e) {
+    const canvas = this.$canvas;
+
+    console.log('hpe', e);
     this.lastScale = this.lastScale * e.scale;
     console.log('pinchend', this.lastScale, e.scale, e);
+
+    // resize canvas, maybe this fixes eraser
+    this.scaledWidth = this.scaledWidth * e.scale;
+    this.scaledHeight = this.scaledHeight * e.scale;
+    canvas.setWidth(this.scaledWidth);
+    canvas.setHeight(this.scaledHeight);
+
+    this.$canvasContainer.width(this.scaledWidth).height(this.scaledHeight);
+    
+    // ("width", `${self.width}px`);
+    // console.log('zoom100, cc', self.$canvasContainer);
+
     // reactivate drawing mode after the pinch is over
   }
 
@@ -233,7 +252,7 @@ class InfiniteCanvas {
       //   this.handlePanning(newEvent);
       //   await this.sleep(1000);
       // }
-      
+
       // on mouse up we want to recalculate new interaction
       // for all objects, so we call setViewportTransform
       // canvas.setViewportTransform(canvas.viewportTransform);
@@ -298,13 +317,22 @@ setTimeout(() => {
   const myCanvas = new InfiniteCanvas(
     $('.canvasElement'),
     $('#parentContainer'),
+    $('#canvasContainer')
   );
   const canvas = myCanvas.initFabric();
 
+  canvas.setWidth(myCanvas.width);
+  canvas.setHeight(myCanvas.height);
 
-  var scrollContainer =  document.getElementById("canvasContainer")
-  scrollContainer.scrollLeft += 100;
-  scrollContainer.scrollTop += 400;
+  // scroll programaatically
+  // var scrollContainer = document.getElementById('parentContainer');
+  // scrollContainer.scrollLeft += 100;
+  // scrollContainer.scrollTop += 400;
+
+  const canvasContent = localStorage.getItem('canvas');
+  canvas.loadFromJSON(canvasContent, () => {
+    canvas.renderAll();
+  });
 
   // After Render
   function afterRender() {

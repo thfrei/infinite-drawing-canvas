@@ -1,9 +1,14 @@
+import EraserBrushFactory from './EraserBrush';
+
 /**
  * add listeners to buttons
  */
-export const initButtons = (canvas) => {
+export const initButtons = (self) => {
+  const canvas = self.$canvas;
+
   var saveCanvas = $('#save-canvas'),
     refreshCanvas = $('#refresh-canvas'),
+    zoom100 = $('#zoom-100'),
     clearEl = $('#clear-canvas'),
     undo = $('#undo'),
     redo = $('#redo');
@@ -42,12 +47,32 @@ export const initButtons = (canvas) => {
     console.log('sC-oC');
     const canvasContent = canvas.toJSON();
     console.log('Canvas JSON', canvasContent);
-    this.saveData();
+    localStorage.setItem('canvas', JSON.stringify(canvasContent));
+  });
+
+  zoom100.on('click', () => {
+    console.log('zoom100');
+    // zoom level of canvas
+    canvas.setZoom(1);
+    // width of
+    canvas.setWidth(self.width);
+    canvas.setHeight(self.height);
+    // reset scale, so that for next pinch we start with "fresh" values
+    self.scaledWidth = self.width;
+    self.scaledHeight = self.height;
+    // set div container of canvas
+    self.$canvasContainer.width(self.width).height(self.height);
+
+    canvas.renderAll();
   });
 
   refreshCanvas.on('click', () => {
     console.log('rC-oC');
-    this.doRefresh('no note entity needed for refresh, only noteComplement');
+    const canvasContent = localStorage.getItem('canvas');
+
+    canvas.loadFromJSON(canvasContent, () => {
+      canvas.renderAll();
+    });
   });
 };
 
