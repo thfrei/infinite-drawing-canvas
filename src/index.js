@@ -49,6 +49,7 @@ class InfiniteCanvas {
     this.handlePanStart = this.handlePanStart.bind(this);
     this.handlePanning = this.handlePanning.bind(this);
     this.handlePanEnd = this.handlePanEnd.bind(this);
+    this.transformCanvas = this.transformCanvas.bind(this);
   }
 
   initFabric() {
@@ -99,7 +100,56 @@ class InfiniteCanvas {
     hammer.on('pan', this.handlePanning);
     hammer.on('panend', this.handlePanEnd);
 
+    canvas.transformCanvas = this.transformCanvas;
+
     return canvas;
+  }
+
+  transformCanvas(direction, distance) {
+    const canvas = this.$canvas;
+    const items = canvas.getObjects();
+
+    for (let i = 0; i < items.length; i++) {
+      const item = canvas.item(i).setCoords();
+      console.log('tc, item', item);
+      if (direction === 'top') {
+        // move all down
+        item.top = item.top + distance;
+      }
+      if (direction === 'left') {
+        // move all to the right
+        item.left = item.left + distance;
+      }
+    }
+
+    // TODO extract zoom to into separate function (reuse for zoom 100% button)
+    // zoom level of canvas
+    canvas.setZoom(1);
+    // width of
+    canvas.setWidth(this.width);
+    canvas.setHeight(this.height);
+    // reset scale, so that for next pinch we start with "fresh" values
+    this.scaledWidth = this.width;
+    this.scaledHeight = this.height;
+    // set div container of canvas
+    this.$canvasContainer.width(this.width).height(this.height);
+
+    let newWidth = this.scaledWidth,  newHeight = this.scaledHeight;
+
+    if (direction === 'top' || direction === 'bottom') {
+      newHeight = this.scaledHeight + distance;
+    } else if (direction === 'left' || direction === 'right') {
+      newWidth = this.scaledWidth + distance;
+    }
+    this.scaledWidth = this.width = newWidth;
+    this.scaledHeight = this.height = newHeight;
+    canvas.setWidth(newWidth);
+    canvas.setHeight(newHeight);
+    
+    this.$canvasContainer.width(newWidth).height(newHeight);
+
+    canvas.renderAll();
+    console.log('called tc', direction, distance);
   }
 
   addDemoContent(canvas) {
@@ -190,7 +240,7 @@ class InfiniteCanvas {
     canvas.setHeight(this.scaledHeight);
 
     this.$canvasContainer.width(this.scaledWidth).height(this.scaledHeight);
-    
+
     // ("width", `${self.width}px`);
     // console.log('zoom100, cc', self.$canvasContainer);
 
@@ -317,7 +367,7 @@ setTimeout(() => {
   const myCanvas = new InfiniteCanvas(
     $('.canvasElement'),
     $('#parentContainer'),
-    $('#canvasContainer')
+    $('#canvasContainer'),
   );
   const canvas = myCanvas.initFabric();
 
@@ -339,4 +389,7 @@ setTimeout(() => {
     console.log('after:render outside');
   }
   canvas.on('after:render', _debounce(afterRender, 1000));
+
+  window.fabric = fabric;
+  window.myCanvas = canvas;
 }, 1000);

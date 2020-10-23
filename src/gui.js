@@ -53,6 +53,7 @@ export const initButtons = (self) => {
 
   zoom100.on('click', () => {
     console.log('zoom100');
+    // TODO extract zoom to into separate function (reuse for zoom 100% button)
     // zoom level of canvas
     canvas.setZoom(1);
     // width of
@@ -82,6 +83,21 @@ export const initButtons = (self) => {
     const imageSrc = `data:image/svg+xml;utf8,${svg}`;
     // $('#svgImage').html(`<img src="${imageSrc}" height="100" />`);
     $('#svgImage').html(`${svg}`);
+  });
+
+  
+  const enlargeValue = parseInt($('#enlargeValue').value, 10) || 100;
+  $('#enlarge-left').on('click', () => {
+    self.$canvas.transformCanvas("left", enlargeValue);
+  });
+  $('#enlarge-top').on('click', () => {
+    self.$canvas.transformCanvas("top", enlargeValue);
+  });
+  $('#enlarge-right').on('click', () => {
+    self.$canvas.transformCanvas("right", enlargeValue);
+  });
+  $('#enlarge-bottom').on('click', () => {
+    self.$canvas.transformCanvas("bottom", enlargeValue);
   });
 };
 
