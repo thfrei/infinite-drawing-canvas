@@ -52,6 +52,7 @@ export const initButtons = (self) => {
     const payload = {
       width: self.width,
       height: self.height,
+      lastScale: self.lastScale,
       canvas: canvasContent,
     };
     localStorage.setItem('infiniteCanvas', JSON.stringify(payload));
@@ -63,8 +64,9 @@ export const initButtons = (self) => {
     console.log('rcoc, inf', infiniteCanvas);
 
     canvas.loadFromJSON(infiniteCanvas.canvas, () => {
-      self.width = infiniteCanvas.width;
-      self.height = infiniteCanvas.height;
+      self.width = self.scaledWidth = infiniteCanvas.width;
+      self.height = self.scaledHeight = infiniteCanvas.height;
+      self.lastScale = infiniteCanvas.lastScale;
       canvas.setWidth(infiniteCanvas.width);
       canvas.setHeight(infiniteCanvas.height);
       self.$canvasContainer.width(infiniteCanvas.width).height(infiniteCanvas.height);

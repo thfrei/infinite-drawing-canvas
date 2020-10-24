@@ -226,6 +226,8 @@ class InfiniteCanvas {
     console.log('hp', e);
     const canvas = this.$canvas;
     console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
+    // during pinch, we need to focus top left corner.
+    // otherwise canvas might slip underneath the container and misalign.
     let point = null;
     point = new fabric.Point(0, 0);
     // point = new fabric.Point(e.center.x, e.center.y);
