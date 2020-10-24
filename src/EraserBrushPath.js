@@ -46,7 +46,8 @@ const EraserBrushPathFactory = (fabric) => {
         if (obj instanceof fabric.Textbox) return false;
         if (obj instanceof fabric.Text) return false;
         if (obj instanceof fabric.IText) return false;
-        if (!obj.intersectsWithObject(path)) return false;
+        // intersectsWithObject(x, absoluteopt=true) <- enables working eraser during zoom
+        if (!obj.intersectsWithObject(path, true)) return false;
         return true;
       });
 

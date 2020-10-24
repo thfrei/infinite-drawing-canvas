@@ -38,6 +38,8 @@ const EraserBrushFactory = (fabric) => {
         aY.push(o.oCoords[prop].y);
       }
 
+      console.log('_calcBounds', aX, aY, props, jLen, onlyWidthHeight);
+
       this._getBounds(aX, aY, onlyWidthHeight);
     },
   });
@@ -89,7 +91,9 @@ const EraserBrushFactory = (fabric) => {
         if (obj instanceof fabric.Textbox) return false;
         if (obj instanceof fabric.Text) return false;
         if (obj instanceof fabric.IText) return false;
-        if (!obj.intersectsWithObject(path)) return false;
+        // get all objects, that intersect
+        // intersectsWithObject(x, absoluteopt=true) <- enables working eraser during zoom
+        if (!obj.intersectsWithObject(path, true)) return false;
         return true;
       });
 
