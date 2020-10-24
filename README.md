@@ -4,7 +4,7 @@ Infinite canvas that allows drawing with pen and pinch zoom. It should feel more
 
 Demo
 
-![demo](doc/idc-demo.gif)
+![demo](doc/idc-demo-2.gif)
 
 ## Try:
 
@@ -20,6 +20,7 @@ Demo
 * Draw with Mouse / Touch / Pen
 * Add Text
 * Erase custom path (known issue: Resolution suffers... :-/)
+* Erase whole object (existing path)
 
 \* Actually one can define how big it is. In the demo it is 1500x1500px, way bigger than the visible area. Resultion of paths drawn depend on the scaling factor..., so infinite in fact is an overstatement.
 
@@ -28,7 +29,6 @@ Demo
 * Style Text
 * Add Links to Text, clickable with Mouse or Touch
 * Add basic shapes (Rectangle, Circle, Line, Ellipse, Star?)
-* Erase whole object (existing path)
 * Work on "infinity" (see \*)
 
 # Credits
