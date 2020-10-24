@@ -29,6 +29,7 @@
   "homepage": "https://github.com/thfrei/infinite-drawing-canvas#readme",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.2.1",
     "eslint": "^7.10.0",
     "eslint-plugin-prettier": "^3.1.4",
     "html-webpack-plugin": "^4.5.0",
