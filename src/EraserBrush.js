@@ -106,7 +106,7 @@ const EraserBrushFactory = (fabric) => {
         });
         // Be aware of async behavior!
         const fabricImage = await fabricImageFromURLPromise(erasedGroupDataURL);
-        // TODO: If complete path was erased, remove canvas object completely!
+        // TODO: If complete path was erased, remove canvas object completely! Right now, an empty image is added
         console.log(eraserPath, erasedGroup, 'fabricimage', fabricImage);
         console.image(erasedGroupDataURL);
         fabricImage.set({
@@ -118,8 +118,9 @@ const EraserBrushFactory = (fabric) => {
         this.canvas.add(fabricImage);
       }
 
-      this.canvas.clearContext(this.canvas.contextTop);
       this.canvas.renderAll();
+      // removes path of eraser
+      this.canvas.clearContext(this.canvas.contextTop);
       this._resetShadow();
     },
   });

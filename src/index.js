@@ -50,6 +50,7 @@ class InfiniteCanvas {
     this.handlePanning = this.handlePanning.bind(this);
     this.handlePanEnd = this.handlePanEnd.bind(this);
     this.transformCanvas = this.transformCanvas.bind(this);
+    this.resetZoom = this.resetZoom.bind(this);
   }
 
   initFabric() {
@@ -74,7 +75,7 @@ class InfiniteCanvas {
     // new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
 
     // Buttons
-    initButtons(this);
+    initButtons(self);
     initPens(canvas);
 
     // Handle different input devices: Touch (Finger), Pen, Mouse
@@ -122,17 +123,7 @@ class InfiniteCanvas {
       }
     }
 
-    // TODO extract zoom to into separate function (reuse for zoom 100% button)
-    // zoom level of canvas
-    canvas.setZoom(1);
-    // width of
-    canvas.setWidth(this.width);
-    canvas.setHeight(this.height);
-    // reset scale, so that for next pinch we start with "fresh" values
-    this.scaledWidth = this.width;
-    this.scaledHeight = this.height;
-    // set div container of canvas
-    this.$canvasContainer.width(this.width).height(this.height);
+    this.resetZoom();
 
     let newWidth = this.scaledWidth,  newHeight = this.scaledHeight;
 
@@ -150,6 +141,21 @@ class InfiniteCanvas {
 
     canvas.renderAll();
     console.log('called tc', direction, distance);
+  }
+
+  resetZoom() {
+    const canvas = this.$canvas;
+
+    // zoom level of canvas
+    canvas.setZoom(1);
+    // width of
+    canvas.setWidth(this.width);
+    canvas.setHeight(this.height);
+    // reset scale, so that for next pinch we start with "fresh" values
+    this.scaledWidth = this.width;
+    this.scaledHeight = this.height;
+    // set div container of canvas
+    this.$canvasContainer.width(this.width).height(this.height);
   }
 
   addDemoContent(canvas) {
@@ -373,16 +379,6 @@ setTimeout(() => {
 
   canvas.setWidth(myCanvas.width);
   canvas.setHeight(myCanvas.height);
-
-  // scroll programaatically
-  // var scrollContainer = document.getElementById('parentContainer');
-  // scrollContainer.scrollLeft += 100;
-  // scrollContainer.scrollTop += 400;
-
-  const canvasContent = localStorage.getItem('canvas');
-  canvas.loadFromJSON(canvasContent, () => {
-    canvas.renderAll();
-  });
 
   // After Render
   function afterRender() {

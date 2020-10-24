@@ -1,4 +1,5 @@
 import EraserBrushFactory from './EraserBrush';
+import EraserBrushPathFactory from './EraserBrushPath';
 
 /**
  * add listeners to buttons
@@ -48,33 +49,36 @@ export const initButtons = (self) => {
     console.log('sC-oC');
     const canvasContent = canvas.toJSON();
     console.log('Canvas JSON', canvasContent);
-    localStorage.setItem('canvas', JSON.stringify(canvasContent));
+    const payload = {
+      width: self.width,
+      height: self.height,
+      canvas: canvasContent,
+    };
+    localStorage.setItem('infiniteCanvas', JSON.stringify(payload));
+  });
+
+  refreshCanvas.on('click', () => {
+    console.log('rC-oC');
+    const infiniteCanvas = JSON.parse(localStorage.getItem('infiniteCanvas') || "");
+    console.log('rcoc, inf', infiniteCanvas);
+
+    canvas.loadFromJSON(infiniteCanvas.canvas, () => {
+      self.width = infiniteCanvas.width;
+      self.height = infiniteCanvas.height;
+      canvas.setWidth(infiniteCanvas.width);
+      canvas.setHeight(infiniteCanvas.height);
+      self.$canvasContainer.width(infiniteCanvas.width).height(infiniteCanvas.height);
+      canvas.renderAll();
+    });
   });
 
   zoom100.on('click', () => {
     console.log('zoom100');
     // TODO extract zoom to into separate function (reuse for zoom 100% button)
     // zoom level of canvas
-    canvas.setZoom(1);
-    // width of
-    canvas.setWidth(self.width);
-    canvas.setHeight(self.height);
-    // reset scale, so that for next pinch we start with "fresh" values
-    self.scaledWidth = self.width;
-    self.scaledHeight = self.height;
-    // set div container of canvas
-    self.$canvasContainer.width(self.width).height(self.height);
+    self.resetZoom();
 
     canvas.renderAll();
-  });
-
-  refreshCanvas.on('click', () => {
-    console.log('rC-oC');
-    const canvasContent = localStorage.getItem('canvas');
-
-    canvas.loadFromJSON(canvasContent, () => {
-      canvas.renderAll();
-    });
   });
 
   showSVG.on('click', () => {
@@ -85,19 +89,21 @@ export const initButtons = (self) => {
     $('#svgImage').html(`${svg}`);
   });
 
-  
-  const enlargeValue = parseInt($('#enlargeValue').value, 10) || 100;
   $('#enlarge-left').on('click', () => {
-    self.$canvas.transformCanvas("left", enlargeValue);
+    const enlargeValue = parseInt($('#enlargeValue').val(), 10);
+    self.$canvas.transformCanvas('left', enlargeValue);
   });
   $('#enlarge-top').on('click', () => {
-    self.$canvas.transformCanvas("top", enlargeValue);
+    const enlargeValue = parseInt($('#enlargeValue').val(), 10);
+    self.$canvas.transformCanvas('top', enlargeValue);
   });
   $('#enlarge-right').on('click', () => {
-    self.$canvas.transformCanvas("right", enlargeValue);
+    const enlargeValue = parseInt($('#enlargeValue').val(), 10);
+    self.$canvas.transformCanvas('right', enlargeValue);
   });
   $('#enlarge-bottom').on('click', () => {
-    self.$canvas.transformCanvas("bottom", enlargeValue);
+    const enlargeValue = parseInt($('#enlargeValue').val(), 10);
+    self.$canvas.transformCanvas('bottom', enlargeValue);
   });
 };
 
@@ -155,6 +161,14 @@ export const initPens = (canvas) => {
     const eraserBrush = new EraserBrush(canvas);
     eraserBrush.width = 10;
     eraserBrush.color = 'rgb(236,195,195)'; // erser works with opacity!
+    canvas.freeDrawingBrush = eraserBrush;
+    canvas.isDrawingMode = true;
+  });
+  $('#eraser-path').on('click', () => {
+    const { EraserBrushPath } = EraserBrushPathFactory(fabric);
+    const eraserBrush = new EraserBrushPath(canvas);
+    eraserBrush.width = 8;
+    eraserBrush.color = 'rgba(236,195,220, 20)'; // erser works with opacity!
     canvas.freeDrawingBrush = eraserBrush;
     canvas.isDrawingMode = true;
   });
