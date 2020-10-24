@@ -154,6 +154,7 @@ class InfiniteCanvas {
     // reset scale, so that for next pinch we start with "fresh" values
     this.scaledWidth = this.width;
     this.scaledHeight = this.height;
+    this.lastScale = 1;
     // set div container of canvas
     this.$canvasContainer.width(this.width).height(this.height);
   }
