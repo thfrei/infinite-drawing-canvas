@@ -3,6 +3,52 @@ import _debounce from './lib/lodash.debounce';
 import { initButtons, initPens } from './gui.js';
 
 /**
+ * Class of all valid Infinite Canvas States
+ * 
+ * usage:
+ * const canvasState = new CanvasState();
+ * canvasState.on('selecting', ()=>{});
+ * canvasState.activate('selecting');
+Inspiration: https://stackoverflow.com/a/53917410
+https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+ */
+class CanvasState extends EventTarget {
+  constructor(initialState) {
+    this.states = {
+      IDLE: 'idle',
+      INTERACTING: 'interacting',
+      DRAGGING: 'dragging',
+      PANNING: 'panning',
+      SELECTING: 'selecting',
+      PINCH_ZOOMING: 'pinch_zooming',
+      SELECTED: 'selected,',
+    };
+
+    this.currentState = initialState || this.state.IDLE;
+
+    this.listeners = {};
+  }
+
+  activate(state) {
+    if (this._isValidState(state)) {
+      this.currentState = state;
+      this.dispatchEvent(new Event(state));
+    } else {
+      throw new Error(`This is not a valid State: '${state}`);
+    }
+  }
+
+  _isValidState(state) {
+    const statesArray = Object.values(this.states);
+    return statesArray.find(state);
+  }
+
+  get() {
+    return this.currentState;
+  }
+}
+
+/**
  * Infinite Canvas
  */
 class InfiniteCanvas {
@@ -30,16 +76,6 @@ class InfiniteCanvas {
     ];
     this.width = this.scaledWidth = 1500; //px
     this.height = this.scaledHeight = 1500; //px
-
-    this.state = {
-      IDLE: 'idle',
-      INTERACTING: 'interacting',
-      DRAGGING: 'dragging',
-      PANNING: 'panning',
-      SELECTING: 'selecting',
-      PINCH_ZOOMING: 'pinch_zooming',
-      SELECTED: 'selected,',
-    };
 
     // bind methods to this
     this.handlePointerEventBefore = this.handlePointerEventBefore.bind(this);
@@ -125,7 +161,8 @@ class InfiniteCanvas {
 
     this.resetZoom();
 
-    let newWidth = this.scaledWidth,  newHeight = this.scaledHeight;
+    let newWidth = this.scaledWidth,
+      newHeight = this.scaledHeight;
 
     if (direction === 'top' || direction === 'bottom') {
       newHeight = this.scaledHeight + distance;
@@ -136,7 +173,7 @@ class InfiniteCanvas {
     this.scaledHeight = this.height = newHeight;
     canvas.setWidth(newWidth);
     canvas.setHeight(newHeight);
-    
+
     this.$canvasContainer.width(newWidth).height(newHeight);
 
     canvas.renderAll();
