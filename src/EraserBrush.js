@@ -1,3 +1,5 @@
+import _cloneDeep from './lib/lodash.cloneDeep';
+
 const EraserBrushFactory = (fabric) => {
   /**
    * ErasedGroup, part of EraserBrush
@@ -100,7 +102,7 @@ const EraserBrushFactory = (fabric) => {
       // async loop to ensure, that first we do the erasing for all objects, and then update canvas
       for (const intersectedObject of objects) {
         // eraserPath is handled by reference later, so we need copy for every intersectedObject
-        const eraserPath = _.cloneDeep(path);
+        const eraserPath = _cloneDeep(path);
 
         // by adding path-object with 'destination-out', it will be 'erased'
         const erasedGroup = new ErasedGroup(intersectedObject, eraserPath);
