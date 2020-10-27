@@ -107,6 +107,10 @@ export const initButtons = (self) => {
     const enlargeValue = parseInt($('#enlargeValue').val(), 10);
     self.$canvas.transformCanvas('bottom', enlargeValue);
   });
+  
+  $('#mode-select').on('click', () => {
+    self.$canvas.isDrawingMode = false;
+  });
 };
 
 export const initPens = (canvas) => {
