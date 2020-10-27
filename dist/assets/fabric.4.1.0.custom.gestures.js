@@ -5083,7 +5083,6 @@ fabric.CommonMethods = {
   // since ie11 can use addEventListener but they do not support options, i need to check
   var couldUseAttachEvent = !!fabric.document.createElement('div').attachEvent,
       touchEvents = ['touchstart', 'touchmove', 'touchend'];
-      
   /**
    * Adds an event listener to an element
    * @function
@@ -14473,13 +14472,14 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @private
      */
     _getEventPrefix: function () {
-      return this.enablePointerEvents ? 'pointer' : 'pointer';
+      // TODO, infinite-drawing-canvas
+      // here we should also use pointer
+      return this.enablePointerEvents ? 'pointer' : 'mouse';
     },
 
     addOrRemove: function(functor, eventjsFunctor) {
       var canvasElement = this.upperCanvasEl,
           eventTypePrefix = this._getEventPrefix();
-          console.log('mymy', eventTypePrefix);
       functor(fabric.window, 'resize', this._onResize);
       functor(canvasElement, eventTypePrefix + 'down', this._onMouseDown);
       functor(canvasElement, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
@@ -14494,8 +14494,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
       functor(canvasElement, 'drop', this._onDrop);
       if (!this.enablePointerEvents) {
         functor(canvasElement, 'touchstart', this._onTouchStart, addEventOptions);
-        // functor(canvasElement, 'pointerdown', this._onTouchStart, addEventOptions);
-        // functor(canvasElement, 'pointerup', this._onTouchStart, addEventOptions);
       }
       if (typeof eventjs !== 'undefined' && eventjsFunctor in eventjs) {
         eventjs[eventjsFunctor](canvasElement, 'gesture', this._onGesture);
@@ -14644,7 +14642,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} [self] Inner Event object
      */
     _onLongPress: function(e, self) {
-      console.log('mymy', '_onLongPress', e);
       this.__onLongPress && this.__onLongPress(e, self);
     },
 
