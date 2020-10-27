@@ -34,8 +34,8 @@ const EraserBrushFactory = (fabric) => {
       o.setCoords(ignoreZoom);
       for (let j = 0; j < jLen; j++) {
         const prop = props[j];
-        aX.push(o.oCoords[prop].x);
-        aY.push(o.oCoords[prop].y);
+        aX.push(o.aCoords[prop].x); // when using dev-fabric js, we need aCoords, in minified oCoords
+        aY.push(o.aCoords[prop].y); // when using dev-fabric js, we need aCoords, in minified oCoords
       }
 
       console.log('_calcBounds', aX, aY, props, jLen, onlyWidthHeight);
