@@ -46,6 +46,10 @@ class CanvasState extends EventTarget {
   get() {
     return this.currentState;
   }
+
+  getStates() {
+    return this.states;
+  }
 }
 
 /**
@@ -97,9 +101,11 @@ class InfiniteCanvas {
     const canvas = new fabric.Canvas(canvasElement, {
       isDrawingMode: true,
       allowTouchScrolling: true,
+      transparentCorners: false,
     });
     this.$canvas = canvas;
-    fabric.Object.prototype.transparentCorners = false;
+    // fabric.Object.prototype.transparentCorners = false;
+
 
     // Add Demo Content
     this.addDemoContent(canvas);
@@ -117,25 +123,25 @@ class InfiniteCanvas {
     // Handle different input devices: Touch (Finger), Pen, Mouse
     canvas.on('mouse:down:before', this.handlePointerEventBefore);
 
-    var hammer = new Hammer.Manager(canvas.upperCanvasEl);
+    this.hammer = new Hammer.Manager(canvas.upperCanvasEl);
     var pinch = new Hammer.Pinch();
     var pan = new Hammer.Pan();
-    hammer.add([pinch, pan]);
+    this.hammer.add([pinch, pan]);
 
     // Zoom (Pinch)
     // FIXME: not working
     // Problem: Somehow eraser planes from matched do not overlay and then do not erase
-    hammer.on('pinchmove', _throttle(this.handlePinch, 20));
+    this.hammer.on('pinchmove', _throttle(this.handlePinch, 20));
     // the pinchend call must be debounced, since a pinchmove event might
     // occur after a couple of ms after the actual pinchend event. With the
     // debounce, it is garuanted, that this.lastScale and the scale for the
     // next pinch zoom is set correctly
-    hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
+    this.hammer.on('pinchend', _debounce(this.handlePinchEnd, 200));
 
     // Move Canvas
-    hammer.on('panstart', this.handlePanStart);
-    hammer.on('pan', this.handlePanning);
-    hammer.on('panend', this.handlePanEnd);
+    this.hammer.on('panstart', this.handlePanStart);
+    this.hammer.on('pan', this.handlePanning);
+    this.hammer.on('panend', this.handlePanEnd);
 
     canvas.transformCanvas = this.transformCanvas;
 
@@ -297,7 +303,9 @@ class InfiniteCanvas {
     const canvas = this.$canvas;
     console.log('panstart', e);
 
-    if (e.pointerType === 'touch') {
+    if (e.pointerType === 'touch'
+    || false // pointertype mouse and canvas state mouse-drag 
+    ) {
       canvas.isDrawingMode = false;
       canvas.isDragging = true;
       canvas.selection = false;
@@ -369,6 +377,8 @@ class InfiniteCanvas {
     const TOUCH = 'touch';
     const PEN = 'pen';
     const MOUSE = 'mouse';
+    // we need to modify fabric.js in order to get the
+    // pointerevent and not only the touchevent when using pen
     console.log('recognizeInput Touchevent', e);
 
     if (e.touches) {
@@ -382,6 +392,9 @@ class InfiniteCanvas {
         const touchEvent = e.touches[0] || {};
         console.log('recognizeInput Touchevent', touchEvent);
         if (touchEvent.radiusX === 0.5 && touchEvent.radiusY === 0.5) {
+          // when we have pointer event, we can distinguish between
+          // pen (buttons=1) and eraser (buttons=32) <- pointerevent
+          // at least on chrome; firefox not supported :-(
           console.log('recognizeInput', PEN);
           return PEN;
         } else {

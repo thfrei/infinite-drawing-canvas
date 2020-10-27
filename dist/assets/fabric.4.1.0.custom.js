@@ -14472,8 +14472,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @private
      */
     _getEventPrefix: function () {
-      // TODO, infinite-drawing-canvas
-      // here we should also use pointer
+      // mymy, we should add pointer events to: 'pointerdown', -x...
       return this.enablePointerEvents ? 'pointer' : 'mouse';
     },
 
@@ -14494,6 +14493,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
       functor(canvasElement, 'drop', this._onDrop);
       if (!this.enablePointerEvents) {
         functor(canvasElement, 'touchstart', this._onTouchStart, addEventOptions);
+        // mymy, we should add pointer events to: 'pointerdown', -x...
       }
       if (typeof eventjs !== 'undefined' && eventjsFunctor in eventjs) {
         eventjs[eventjsFunctor](canvasElement, 'gesture', this._onGesture);
@@ -14744,6 +14744,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on mousedown
      */
     _onMouseDown: function (e) {
+      console.log('mymy', '_onMouseDown', e);
       this.__onMouseDown(e);
       this._resetTransformEventData();
       var canvasElement = this.upperCanvasEl,
@@ -15096,7 +15097,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on mousedown
      */
     __onMouseDown: function (e) {
-      console.log('mymy', '__onMouseDown', e);
       this._cacheTransformEventData(e);
       this._handleEvent(e, 'down:before');
       var target = this._target;
