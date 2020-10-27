@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "description": "canvas that allows infinite drawing with stylus support and pressure sensitivity",
   "main": "index.js",
+  "engines": {
+    "node": ">12"
+  },
   "scripts": {
     "start": "npm run dev",
     "dev": "webpack-dev-server --open --config webpack.dev.js",
