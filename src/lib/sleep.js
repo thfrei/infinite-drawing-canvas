@@ -3,3 +3,5 @@ export const sleep = (time) => {
     setTimeout(resolve, time);
   });
 };
+
+export default sleep;

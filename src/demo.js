@@ -1,8 +1,8 @@
 import { initButtons, initPens } from './gui.js';
 import { addBg, addDemoContent } from './utils.js';
 import { InfiniteCanvas, CanvasState } from './index.js';
+import _debounce from './lib/lodash.debounce';
 
-// main()
 // just skip one cycle, so we can make sure, all other libraries are loaded!
 setTimeout(() => {
   const myCanvas = new InfiniteCanvas(
@@ -17,7 +17,7 @@ setTimeout(() => {
   canvas.setHeight(myCanvas.height);
 
   addDemoContent(canvas);
-  // addBg(canvas);
+  addBg(canvas);
 
   // Buttons
   initButtons(infiniteCanvas);

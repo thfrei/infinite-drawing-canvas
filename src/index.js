@@ -1,5 +1,6 @@
 import _throttle from './lib/lodash.throttle';
 import _debounce from './lib/lodash.debounce';
+import sleep from './lib/sleep';
 
 /**
  * Class of all valid Infinite Canvas States
@@ -90,6 +91,7 @@ class InfiniteCanvas {
     this.handlePanEnd = this.handlePanEnd.bind(this);
     this.transformCanvas = this.transformCanvas.bind(this);
     this.resetZoom = this.resetZoom.bind(this);
+    this.cropCanvas = this.cropCanvas.bind(this);
   }
 
   initFabric() {
@@ -138,8 +140,16 @@ class InfiniteCanvas {
     return self;
   }
 
+  /**
+   *
+   * @param {string} direction [top, left, right, bottom]
+   * @param {float} distance distance in px
+   */
   transformCanvas(direction, distance) {
+    console.log('transforming', direction, distance);
     const canvas = this.$canvas;
+    this.resetZoom();
+
     const items = canvas.getObjects();
 
     // Move all items, so that it seems canvas was added on the outside
@@ -155,8 +165,6 @@ class InfiniteCanvas {
         item.left = item.left + distance;
       }
     }
-
-    this.resetZoom();
 
     let newWidth = this.scaledWidth,
       newHeight = this.scaledHeight;
@@ -371,15 +379,48 @@ class InfiniteCanvas {
     canvas.renderAll();
   }
 
-  cropCanvas() {
+  async cropCanvas() {
     console.log('cropCanvas');
+    const canvas = this.$canvas;
+
+    // get all objects
+    const items = canvas.getObjects();
     // get maximum bounding rectangle of all objects
+    // Learnings: we must NOT use fabric.Group, since this messes with items and then
+    // SVG export is scwed. Items coordinates are not set correctly!
+    // fabric.Group(items).aCoords does NOT work.
+    // Therefore we need to get bounding box ourselves
+    const bound = { tl: { x: Infinity, y: Infinity }, br: { x: 0, y: 0 } };
+    for (let i = 0; i < items.length; i++) {
+      // focus on tl/br;
+      const item = items[i];
+      const tl = item.aCoords.tl;
+      const br = item.aCoords.br;
+      console.log('cC, item', tl, br);
+      if (tl.x < bound.tl.x) {
+        bound.tl.x = tl.x;
+      }
+      if (tl.y < bound.tl.y) {
+        bound.tl.y = tl.y;
+      }
+      if (br.x > bound.br.x) {
+        bound.br.x = br.x;
+      }
+      if (br.y > bound.br.y) {
+        bound.br.y = br.y;
+      }
+    }
+    console.log('cC, bounds:', bound);
 
     // cut area on all sides
+    this.transformCanvas('left', -bound.tl.x);
+    this.transformCanvas('top', -bound.tl.y);
+    this.transformCanvas('right', -(this.width - bound.br.x + bound.tl.x));
+    this.transformCanvas(
+      'bottom',
+      -(this.height - bound.br.y + bound.tl.y),
+    );
   }
 }
 
-export {
-    InfiniteCanvas,
-    CanvasState,
-}
+export { InfiniteCanvas, CanvasState };
