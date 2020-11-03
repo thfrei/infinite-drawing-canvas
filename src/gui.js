@@ -107,6 +107,9 @@ export const initButtons = (self) => {
     const enlargeValue = parseInt($('#enlargeValue').val(), 10);
     self.$canvas.transformCanvas('bottom', enlargeValue);
   });
+  $('#crop-canvas').on('click', () => {
+    self.cropCanvas();
+  });
   
   $('#mode-select').on('click', () => {
     self.$canvas.isDrawingMode = false;

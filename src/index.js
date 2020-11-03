@@ -1,6 +1,5 @@
 import _throttle from './lib/lodash.throttle';
 import _debounce from './lib/lodash.debounce';
-import { initButtons, initPens } from './gui.js';
 
 /**
  * Class of all valid Infinite Canvas States
@@ -106,19 +105,10 @@ class InfiniteCanvas {
     this.$canvas = canvas;
     // fabric.Object.prototype.transparentCorners = false;
 
-
-    // Add Demo Content
-    this.addDemoContent(canvas);
-    this.addBg(canvas);
-
     // Resizing
     // FIXME: canvas should only enlarge, maybe we dont even need, since canvas will scroll behind parent!
     // const canvasNote = this.$parent.get(0);
     // new ResizeObserver(_throttle(this.resizeCanvas, 200)).observe(canvasNote); // this leads to a eraserbrush remaining...
-
-    // Buttons
-    initButtons(self);
-    initPens(canvas);
 
     // Handle different input devices: Touch (Finger), Pen, Mouse
     canvas.on('mouse:down:before', this.handlePointerEventBefore);
@@ -145,13 +135,14 @@ class InfiniteCanvas {
 
     canvas.transformCanvas = this.transformCanvas;
 
-    return canvas;
+    return self;
   }
 
   transformCanvas(direction, distance) {
     const canvas = this.$canvas;
     const items = canvas.getObjects();
 
+    // Move all items, so that it seems canvas was added on the outside
     for (let i = 0; i < items.length; i++) {
       const item = canvas.item(i).setCoords();
       console.log('tc, item', item);
@@ -200,48 +191,6 @@ class InfiniteCanvas {
     this.lastScale = 1;
     // set div container of canvas
     this.$canvasContainer.width(this.width).height(this.height);
-  }
-
-  addDemoContent(canvas) {
-    var comicSansText = new fabric.Text("I'm in Comic Sans", {
-      fontFamily: 'Comic Sans MS',
-      left: 100,
-      top: 100,
-    });
-    canvas.add(comicSansText);
-    var demoLine = new fabric.Line([30, 30, 150, 210], {
-      fill: 'green',
-      stroke: 'blue',
-      strokeWidth: 5,
-      selectable: false,
-      evented: false,
-    });
-    canvas.add(demoLine);
-  }
-
-  addBg(canvas) {
-    // Add BG
-    var bg = new fabric.Rect({
-      width: 1500,
-      height: 1500,
-      stroke: 'Fuchsia',
-      strokeWidth: 10,
-      fill: '',
-      evented: false,
-      selectable: false,
-    });
-    bg.fill = new fabric.Pattern(
-      {
-        source:
-          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAASElEQVQ4y2NkYGD4z0A6+M3AwMBKrGJWBgYGZiibEQ0zIInDaCaoelYyHYcX/GeitomjBo4aOGrgQBj4b7RwGFwGsjAwMDAAAD2/BjgezgsZAAAAAElFTkSuQmCC',
-      },
-      function () {
-        bg.dirty = true;
-        canvas.requestRenderAll();
-      },
-    );
-    bg.canvas = canvas;
-    canvas.backgroundImage = bg;
   }
 
   handlePointerEventBefore(fabricEvent) {
@@ -303,8 +252,9 @@ class InfiniteCanvas {
     const canvas = this.$canvas;
     console.log('panstart', e);
 
-    if (e.pointerType === 'touch'
-    || false // pointertype mouse and canvas state mouse-drag 
+    if (
+      e.pointerType === 'touch' ||
+      false // pointertype mouse and canvas state mouse-drag
     ) {
       canvas.isDrawingMode = false;
       canvas.isDragging = true;
@@ -420,25 +370,16 @@ class InfiniteCanvas {
     canvas.setHeight(1500);
     canvas.renderAll();
   }
+
+  cropCanvas() {
+    console.log('cropCanvas');
+    // get maximum bounding rectangle of all objects
+
+    // cut area on all sides
+  }
 }
 
-setTimeout(() => {
-  const myCanvas = new InfiniteCanvas(
-    $('.canvasElement'),
-    $('#parentContainer'),
-    $('#canvasContainer'),
-  );
-  const canvas = myCanvas.initFabric();
-
-  canvas.setWidth(myCanvas.width);
-  canvas.setHeight(myCanvas.height);
-
-  // After Render
-  function afterRender() {
-    console.log('after:render outside');
-  }
-  canvas.on('after:render', _debounce(afterRender, 1000));
-
-  window.fabric = fabric;
-  window.myCanvas = canvas;
-}, 1000);
+export {
+    InfiniteCanvas,
+    CanvasState,
+}
