@@ -46,9 +46,9 @@
     <button id="text-1" class="btn btn-info"><i class='bx bx-text' style="border-left: 3px solid black"></i></button>
     Mode:
     <button id="mode-select" class="btn btn-info"><i class='bx bx-pointer'></i></button>
-    <button id="mode-1" class="btn btn-info"><i class='bx bx-mouse'></i></button>
-    <button id="mode-2" class="btn btn-info"><i class='bx bxs-hand-up'></i></button>
-    <button id="mode-3" class="btn btn-info"><i class='bx bx-stats'></i>Pen-Touch-Mouse</button>
+    <!-- <button id="mode-1" class="btn btn-info"><i class='bx bx-mouse'></i></button> -->
+    <!-- <button id="mode-2" class="btn btn-info"><i class='bx bxs-hand-up'></i></button> -->
+    <!-- <button id="mode-3" class="btn btn-info"><i class='bx bx-stats'></i>Pen-Touch-Mouse</button> -->
     <br />
     Canvas:
     Enlarge <input type="number" value=100 id="enlargeValue" style="width: 60px" />px
@@ -56,6 +56,8 @@
     <button id="enlarge-top" class="btn btn-info"><i class='bx bxs-dock-left bx-rotate-90' ></i></button>
     <button id="enlarge-bottom" class="btn btn-info"><i class='bx bxs-dock-left bx-rotate-270' ></i></button>
     <button id="enlarge-right" class="btn btn-info"><i class='bx bxs-dock-left bx-rotate-180' ></i></button>
+    Crop: 
+    <button id="crop-canvas" class="btn btn-info"><i class='bx bx-crop'></i></button>
 
   </div>
   <div style="display: inline;">
@@ -68,36 +70,6 @@
 
   <div id="svgImage">
   </div>
-
-
-  <!-- Obsolete... -->
-  <div id="drawing-mode-options" style="position: relative; display: none;">
-
-    <label for="drawing-mode-selector">Mode:</label>
-    <select id="drawing-mode-selector">
-      <option>Pencil</option>
-      <option>Circle</option>
-      <option>Spray</option>
-      <option>Pattern</option>
-      <option>Eraser</option>
-    </select><br>
-
-    <label for="drawing-line-width">Line width:</label>
-    <span class="info">30</span><input type="range" value="30" min="0" max="150" id="drawing-line-width"><br>
-
-    <label for="drawing-color">Line color:</label>
-    <input type="color" value="#005E7A" id="drawing-color"><br>
-
-    <label for="drawing-shadow-color">Shadow color:</label>
-    <input type="color" value="#005E7A" id="drawing-shadow-color"><br>
-
-    <label for="drawing-shadow-width">Shadow width:</label>
-    <span class="info">0</span><input type="range" value="0" min="0" max="50" id="drawing-shadow-width"><br>
-
-    <label for="drawing-shadow-offset">Shadow offset:</label>
-    <span class="info">0</span><input type="range" value="0" min="0" max="50" id="drawing-shadow-offset"><br>
-  </div>
-
 </body>
 
 </html>
