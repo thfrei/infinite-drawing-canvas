@@ -379,6 +379,18 @@ class InfiniteCanvas {
     canvas.renderAll();
   }
 
+  /**
+   * Crop the canvas to the surrounding box of all elements on the canvas 
+   * 
+    Learnings: we must NOT use fabric.Group, since this messes with items and then
+    SVG export is scwed. Items coordinates are not set correctly!
+    fabric.Group(items).aCoords does NOT work.
+    Therefore we need to get bounding box ourselves
+    Note: Or maybe we can use group, destroy and readd everything afterwards:
+    http://fabricjs.com/manage-selection
+    https://gist.github.com/msievers/6069778#gistcomment-2030151
+    https://stackoverflow.com/a/31828460
+   */
   async cropCanvas() {
     console.log('cropCanvas');
     const canvas = this.$canvas;
@@ -386,10 +398,6 @@ class InfiniteCanvas {
     // get all objects
     const items = canvas.getObjects();
     // get maximum bounding rectangle of all objects
-    // Learnings: we must NOT use fabric.Group, since this messes with items and then
-    // SVG export is scwed. Items coordinates are not set correctly!
-    // fabric.Group(items).aCoords does NOT work.
-    // Therefore we need to get bounding box ourselves
     const bound = { tl: { x: Infinity, y: Infinity }, br: { x: 0, y: 0 } };
     for (let i = 0; i < items.length; i++) {
       // focus on tl/br;
