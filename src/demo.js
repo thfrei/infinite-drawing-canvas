@@ -3,6 +3,8 @@ import { addBg, addDemoContent } from './utils.js';
 import { InfiniteCanvas, CanvasState } from './index.js';
 import _debounce from './lib/lodash.debounce';
 
+const PKG_VERSION = process.env.PKG_VERSION
+
 // just skip one cycle, so we can make sure, all other libraries are loaded!
 setTimeout(() => {
   const myCanvas = new InfiniteCanvas(
@@ -22,6 +24,8 @@ setTimeout(() => {
   // Buttons
   initButtons(infiniteCanvas);
   initPens(canvas);
+  // Set package.json version, passed via webpack
+  $("#pkg-version").html(`v${PKG_VERSION}`);
 
   // After Render
   function afterRender() {
