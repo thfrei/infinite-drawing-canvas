@@ -10,6 +10,7 @@
     "start": "npm run dev",
     "dev": "webpack-dev-server --open --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
+    "github-action": "act --secret-file .secrets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

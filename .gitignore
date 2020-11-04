@@ -9,4 +9,7 @@ stats.json
 npm-debug.log
 .idea
 
+# Personal
+.secrets
+
 *~
