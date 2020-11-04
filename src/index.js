@@ -80,6 +80,7 @@ class InfiniteCanvas {
     ];
     this.width = this.scaledWidth = 1500; //px
     this.height = this.scaledHeight = 1500; //px
+    this.drawWithTouch = false;
 
     // bind methods to this
     this.handlePointerEventBefore = this.handlePointerEventBefore.bind(this);
@@ -205,7 +206,7 @@ class InfiniteCanvas {
     const canvas = this.$canvas;
     console.log('mdb', fabricEvent, fabricEvent.e);
     // recognize touch
-    if (this.recognizeInput(fabricEvent.e) === 'touch') {
+    if (this.recognizeInput(fabricEvent.e) === 'touch' && !this.drawWithTouch) {
       console.log('mdb touch');
       canvas.isDrawingMode = false;
       canvas.selection = false;
@@ -261,8 +262,8 @@ class InfiniteCanvas {
     console.log('panstart', e);
 
     if (
-      e.pointerType === 'touch' ||
-      false // pointertype mouse and canvas state mouse-drag
+      e.pointerType === 'touch' &&
+      !this.drawWithTouch // pointertype mouse and canvas state mouse-drag
     ) {
       canvas.isDrawingMode = false;
       canvas.isDragging = true;
@@ -277,10 +278,10 @@ class InfiniteCanvas {
 
   handlePanning(e) {
     const canvas = this.$canvas;
-    console.log('panning', e);
+    // console.log('panning', e);
 
     if (e.pointerType === 'touch') {
-      console.log('pan', e);
+      // console.log('pan', e);
       if (canvas.isDragging) {
         // scrolltest
         const panMultiplier = 1.0;
@@ -424,10 +425,7 @@ class InfiniteCanvas {
     this.transformCanvas('left', -bound.tl.x);
     this.transformCanvas('top', -bound.tl.y);
     this.transformCanvas('right', -(this.width - bound.br.x + bound.tl.x));
-    this.transformCanvas(
-      'bottom',
-      -(this.height - bound.br.y + bound.tl.y),
-    );
+    this.transformCanvas('bottom', -(this.height - bound.br.y + bound.tl.y));
   }
 }
 

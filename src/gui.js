@@ -113,6 +113,10 @@ export const initButtons = (self) => {
   
   $('#mode-select').on('click', () => {
     self.$canvas.isDrawingMode = false;
+    self.drawWithTouch = false;
+  });
+  $('#mode-drawWithTouch').on('click', () => {
+    self.drawWithTouch = true;
   });
 };
 
