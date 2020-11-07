@@ -2,13 +2,15 @@
 # infinite-drawing-canvas
 Infinite canvas that allows drawing with pen and pinch zoom. It should feel more ore less like drawing in an app like OneNote, Krita or other, pen-enabled apps.
 
-Demo: https://thfrei.github.io/infinite-drawing-canvas/
+##Demo: 
 
-Video:
+https://thfrei.github.io/infinite-drawing-canvas/
+
+## Video:
 
 ![demo](doc/idc-demo-2.gif)
 
-## Try:
+## Try / Contribute:
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/thfrei/infinite-drawing-canvas)
 
@@ -32,6 +34,14 @@ Video:
 * Add Links to Text, clickable with Mouse or Touch
 * Add basic shapes (Rectangle, Circle, Line, Ellipse, Star?)
 * Work on "infinity" (see \*)
+
+# Development
+
+## Release new version
+
+```
+npm version patch
+```
 
 # Credits
 

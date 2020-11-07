@@ -18,8 +18,8 @@ setTimeout(() => {
   canvas.setWidth(myCanvas.width);
   canvas.setHeight(myCanvas.height);
 
-  addDemoContent(canvas);
-  addBg(canvas);
+  // addDemoContent(canvas);
+  // addBg(canvas);
 
   // Buttons
   initButtons(infiniteCanvas);
