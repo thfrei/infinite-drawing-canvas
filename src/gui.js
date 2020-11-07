@@ -120,7 +120,8 @@ export const initButtons = (self) => {
   });
 };
 
-export const initPens = (canvas) => {
+export const initPens = (self) => {
+  const canvas = self.$canvas;
   $('#pen-1').on('click', () => {
     canvas.freeDrawingBrush = new fabric['PencilBrush'](canvas);
     canvas.freeDrawingBrush.color = 'black';
@@ -186,13 +187,7 @@ export const initPens = (canvas) => {
     canvas.isDrawingMode = true;
   });
   $('#text-1').on('click', () => {
-    canvas.add(
-      new fabric.IText('Tap and Type', {
-        fontFamily: 'arial black',
-        left: 100,
-        top: 100,
-      }),
-    );
+    self.activatePlaceTextBox = true;
     canvas.isDrawingMode = false;
   });
 };

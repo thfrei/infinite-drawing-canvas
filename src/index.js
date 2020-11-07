@@ -1,6 +1,10 @@
 import _throttle from './lib/lodash.throttle';
 import _debounce from './lib/lodash.debounce';
 import sleep from './lib/sleep';
+import deleteIcon from './lib/deleteIcon';
+
+var img = document.createElement('img');
+img.src = deleteIcon;
 
 /**
  * Class of all valid Infinite Canvas States
@@ -81,6 +85,7 @@ class InfiniteCanvas {
     this.width = this.scaledWidth = 1500; //px
     this.height = this.scaledHeight = 1500; //px
     this.drawWithTouch = false;
+    this.activatePlaceTextBox = false;
 
     // bind methods to this
     this.handlePointerEventBefore = this.handlePointerEventBefore.bind(this);
@@ -93,15 +98,47 @@ class InfiniteCanvas {
     this.transformCanvas = this.transformCanvas.bind(this);
     this.resetZoom = this.resetZoom.bind(this);
     this.cropCanvas = this.cropCanvas.bind(this);
+    this.placeTextBox = this.placeTextBox.bind(this);
+  }
+
+  overrideFabric() {
+    const self = this;
+
+    fabric.Object.prototype.controls.deleteControl = new fabric.Control({
+      x: 0.5,
+      y: -0.5,
+      offsetY: 16,
+      cursorStyle: 'pointer',
+      mouseUpHandler: self.deleteObject,
+      render: self.renderIcon,
+      cornerSize: 24,
+    });
+  }
+
+  renderIcon(ctx, left, top, styleOverride, fabricObject) {
+    var size = this.cornerSize;
+    ctx.save();
+    ctx.translate(left, top);
+    ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
+  deleteObject(eventData, target) {
+    var canvas = target.canvas;
+    canvas.remove(target);
+    canvas.requestRenderAll();
   }
 
   initFabric() {
+    this.overrideFabric();
+
     const canvasElement = this.$canvas.get(0); // fabric.Canvas requires HTMLElement
     this.canvasElement = canvasElement;
 
     const self = this;
     const canvas = new fabric.Canvas(canvasElement, {
-      isDrawingMode: true,
+      isDrawingMode: false,
       allowTouchScrolling: true,
       transparentCorners: false,
     });
@@ -204,24 +241,58 @@ class InfiniteCanvas {
 
   handlePointerEventBefore(fabricEvent) {
     const canvas = this.$canvas;
-    console.log('mdb', fabricEvent, fabricEvent.e);
-    // recognize touch
-    if (this.recognizeInput(fabricEvent.e) === 'touch' && !this.drawWithTouch) {
-      console.log('mdb touch');
-      canvas.isDrawingMode = false;
-      canvas.selection = false;
-      // unselect any possible targets (if you start the pan on an object)
-      if (fabricEvent.target && canvas) {
-        // source: https://stackoverflow.com/a/25535052
-        canvas.deactivateAll().renderAll();
+    const inputType = this.recognizeInput(fabricEvent.e);
+    console.log('mdb', fabricEvent, fabricEvent.e, 'inputType', inputType);
+    // place text box independent of touch type
+    if (this.activatePlaceTextBox) {
+      if (fabricEvent && fabricEvent.absolutePointer) {
+        this.placeTextBox(fabricEvent.absolutePointer.x, fabricEvent.absolutePointer.y);
+        this.activatePlaceTextBox = false;
+        return;
       }
-    } else if (this.recognizeInput(fabricEvent.e) === 'pen') {
+    }
+
+    // recognize touch
+    if (inputType === 'touch') {
+      if (this.drawWithTouch) {
+        // drawing
+        canvas.isDrawingMode = true;
+      } else {
+        // panning
+        console.log('mdb touch');
+        canvas.isDrawingMode = false;
+        canvas.selection = false;
+        // unselect any possible targets (if you start the pan on an object)
+        if (fabricEvent.target && canvas) {
+          // source: https://stackoverflow.com/a/25535052
+          canvas.deactivateAll().renderAll();
+        }
+      }
+    } else if (inputType === 'pen') {
+      // draw with pen
       console.log('mdb pen');
       canvas.isDrawingMode = true;
+    } else if (inputType === 'mouse') {
+      // draw with mouse
+      console.log('mdb mouse, draw');
     } else {
-      console.log('mdb mouse');
-      console.log('DRAW mouse intention');
+      console.log('mdb input type not recognized!');
+      throw new Error('input type not recognized!');
     }
+  }
+
+  placeTextBox(x, y) {
+    const canvas = this.$canvas;
+    canvas.add(
+      new fabric.IText('Tap and Type', {
+        fontFamily: 'Arial',
+        // fontWeith: '200',
+        fontSize: 15,
+        left: x,
+        top: y,
+      }),
+    );
+    canvas.isDrawingMode = false;
   }
 
   handlePinch(e) {

@@ -23,7 +23,7 @@ setTimeout(() => {
 
   // Buttons
   initButtons(infiniteCanvas);
-  initPens(canvas);
+  initPens(infiniteCanvas);
   // Set package.json version, passed via webpack
   $("#pkg-version").html(`v${PKG_VERSION}`);
 

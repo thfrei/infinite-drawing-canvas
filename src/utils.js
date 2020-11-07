@@ -20,22 +20,22 @@ function addBg(canvas) {
   var bg = new fabric.Rect({
     width: 1500,
     height: 1500,
-    stroke: 'Fuchsia',
-    strokeWidth: 10,
-    fill: '',
+    // stroke: 'Fuchsia',
+    // strokeWidth: 10,
+    fill: '#FCFFEB',
     evented: false,
     selectable: false,
   });
-  bg.fill = new fabric.Pattern(
-    {
-      source:
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAASElEQVQ4y2NkYGD4z0A6+M3AwMBKrGJWBgYGZiibEQ0zIInDaCaoelYyHYcX/GeitomjBo4aOGrgQBj4b7RwGFwGsjAwMDAAAD2/BjgezgsZAAAAAElFTkSuQmCC',
-    },
-    function () {
-      bg.dirty = true;
-      canvas.requestRenderAll();
-    },
-  );
+  // bg.fill = new fabric.Pattern(
+  //   {
+  //     source:
+  //       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAASElEQVQ4y2NkYGD4z0A6+M3AwMBKrGJWBgYGZiibEQ0zIInDaCaoelYyHYcX/GeitomjBo4aOGrgQBj4b7RwGFwGsjAwMDAAAD2/BjgezgsZAAAAAElFTkSuQmCC',
+  //   },
+  //   function () {
+  //     bg.dirty = true;
+  //     canvas.requestRenderAll();
+  //   },
+  // );
   bg.canvas = canvas;
   canvas.backgroundImage = bg;
 }
