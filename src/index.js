@@ -8,7 +8,7 @@ img.src = deleteIcon;
 
 /**
  * Class of all valid Infinite Canvas States
- * 
+ *
  * usage:
  * const canvasState = new CanvasState();
  * canvasState.on('selecting', ()=>{});
@@ -18,6 +18,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
  */
 class CanvasState extends EventTarget {
   constructor(initialState) {
+    super();
     this.states = {
       IDLE: 'idle',
       INTERACTING: 'interacting',
@@ -99,6 +100,9 @@ class InfiniteCanvas {
     this.resetZoom = this.resetZoom.bind(this);
     this.cropCanvas = this.cropCanvas.bind(this);
     this.placeTextBox = this.placeTextBox.bind(this);
+    this.getInfiniteCanvasJSON = this.getInfiniteCanvasJSON.bind(this);
+    this.setInfiniteCanvasJSON = this.setInfiniteCanvasJSON.bind(this);
+    this.overrideFabric = this.overrideFabric.bind(this);
   }
 
   overrideFabric() {
@@ -179,6 +183,45 @@ class InfiniteCanvas {
   }
 
   /**
+   * prepares object that has width, scale and height of current view
+   * @returns {{canvas: *, width: *, lastScale: number, height: *}}
+   */
+  getInfiniteCanvasJSON() {
+    const canvas = this.$canvas;
+    const canvasContent = canvas.toJSON();
+    console.log('Canvas JSON', canvasContent);
+    const payload = {
+      width: this.width,
+      height: this.height,
+      lastScale: this.lastScale,
+      canvas: canvasContent,
+    };
+    return JSON.stringify(payload);
+  }
+
+  /**
+   * load infinite canvas json into canvas
+   * @param payloadJSON
+   */
+  setInfiniteCanvasJSON(payloadJSON) {
+    const canvas = this.$canvas;
+    const canvasContainer = this.$canvasContainer;
+    const payload = JSON.parse(payloadJSON) || '';
+    console.log('sICJSON', payload, canvasContainer);
+
+    canvas.loadFromJSON(payload.canvas, () => {
+      console.log('loaded?')
+      this.width = this.scaledWidth = payload.width;
+      this.height = this.scaledHeight = payload.height;
+      this.lastScale = payload.lastScale;
+      canvas.setWidth(payload.width);
+      canvas.setHeight(payload.height);
+      canvasContainer.width(payload.width).height(payload.height);
+      canvas.renderAll();
+    });
+  }
+
+  /**
    *
    * @param {string} direction [top, left, right, bottom]
    * @param {float} distance distance in px
@@ -246,7 +289,10 @@ class InfiniteCanvas {
     // place text box independent of touch type
     if (this.activatePlaceTextBox) {
       if (fabricEvent && fabricEvent.absolutePointer) {
-        this.placeTextBox(fabricEvent.absolutePointer.x, fabricEvent.absolutePointer.y);
+        this.placeTextBox(
+          fabricEvent.absolutePointer.x,
+          fabricEvent.absolutePointer.y,
+        );
         this.activatePlaceTextBox = false;
         return;
       }
@@ -452,8 +498,8 @@ class InfiniteCanvas {
   }
 
   /**
-   * Crop the canvas to the surrounding box of all elements on the canvas 
-   * 
+   * Crop the canvas to the surrounding box of all elements on the canvas
+   *
     Learnings: we must NOT use fabric.Group, since this messes with items and then
     SVG export is scwed. Items coordinates are not set correctly!
     fabric.Group(items).aCoords does NOT work.

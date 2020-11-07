@@ -47,31 +47,17 @@ export const initButtons = (self) => {
 
   saveCanvas.on('click', () => {
     console.log('sC-oC');
-    const canvasContent = canvas.toJSON();
-    console.log('Canvas JSON', canvasContent);
-    const payload = {
-      width: self.width,
-      height: self.height,
-      lastScale: self.lastScale,
-      canvas: canvasContent,
-    };
+    const payload = self.getInfiniteCanvasJSON();
+    console.log('sC-oC', payload);
     localStorage.setItem('infiniteCanvas', JSON.stringify(payload));
   });
 
-  refreshCanvas.on('click', () => {
+  refreshCanvas.on('click', function () {
     console.log('rC-oC');
-    const infiniteCanvas = JSON.parse(localStorage.getItem('infiniteCanvas') || "");
+    const infiniteCanvas = localStorage.getItem('infiniteCanvas') || '';
     console.log('rcoc, inf', infiniteCanvas);
 
-    canvas.loadFromJSON(infiniteCanvas.canvas, () => {
-      self.width = self.scaledWidth = infiniteCanvas.width;
-      self.height = self.scaledHeight = infiniteCanvas.height;
-      self.lastScale = infiniteCanvas.lastScale;
-      canvas.setWidth(infiniteCanvas.width);
-      canvas.setHeight(infiniteCanvas.height);
-      self.$canvasContainer.width(infiniteCanvas.width).height(infiniteCanvas.height);
-      canvas.renderAll();
-    });
+    self.setInfiniteCanvasJSON(infiniteCanvas);
   });
 
   zoom100.on('click', () => {
@@ -110,7 +96,7 @@ export const initButtons = (self) => {
   $('#crop-canvas').on('click', () => {
     self.cropCanvas();
   });
-  
+
   $('#mode-select').on('click', () => {
     self.$canvas.isDrawingMode = false;
     self.drawWithTouch = false;
