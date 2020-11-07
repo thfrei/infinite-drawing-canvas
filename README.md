@@ -45,7 +45,7 @@ npm version patch
 
 # Credits
 
-* Fabric.js - Awesome canvas library with great documentation
+* Fabric.js - Great canvas library
 
 # Prior Art
 
