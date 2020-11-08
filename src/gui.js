@@ -47,17 +47,21 @@ export const initButtons = (self) => {
 
   saveCanvas.on('click', () => {
     console.log('sC-oC');
-    const payload = self.getInfiniteCanvasJSON();
+    const payload = self.getInfiniteCanvas();
     console.log('sC-oC', payload);
     localStorage.setItem('infiniteCanvas', JSON.stringify(payload));
   });
 
-  refreshCanvas.on('click', function () {
+  refreshCanvas.on('click', async function () {
     console.log('rC-oC');
     const infiniteCanvas = localStorage.getItem('infiniteCanvas') || '';
-    console.log('rcoc, inf', infiniteCanvas);
+    // console.log('rcoc, inf', infiniteCanvas);
 
-    self.setInfiniteCanvasJSON(infiniteCanvas);
+    try {
+      await self.setInfiniteCanvas(JSON.parse(infiniteCanvas || ''));
+    } catch (err) {
+      console.error('canvas could not be loaded!');
+    }
   });
 
   zoom100.on('click', () => {

@@ -100,8 +100,8 @@ class InfiniteCanvas {
     this.resetZoom = this.resetZoom.bind(this);
     this.cropCanvas = this.cropCanvas.bind(this);
     this.placeTextBox = this.placeTextBox.bind(this);
-    this.getInfiniteCanvasJSON = this.getInfiniteCanvasJSON.bind(this);
-    this.setInfiniteCanvasJSON = this.setInfiniteCanvasJSON.bind(this);
+    this.getInfiniteCanvas = this.getInfiniteCanvas.bind(this);
+    this.setInfiniteCanvas = this.setInfiniteCanvas.bind(this);
     this.overrideFabric = this.overrideFabric.bind(this);
   }
 
@@ -186,7 +186,7 @@ class InfiniteCanvas {
    * prepares object that has width, scale and height of current view
    * @returns {{canvas: *, width: *, lastScale: number, height: *}}
    */
-  getInfiniteCanvasJSON() {
+  getInfiniteCanvas() {
     const canvas = this.$canvas;
     const canvasContent = canvas.toJSON();
     console.log('Canvas JSON', canvasContent);
@@ -196,28 +196,38 @@ class InfiniteCanvas {
       lastScale: this.lastScale,
       canvas: canvasContent,
     };
-    return JSON.stringify(payload);
+    return payload;
   }
 
   /**
    * load infinite canvas json into canvas
-   * @param payloadJSON
+   * @param infiniteCanvasState
    */
-  setInfiniteCanvasJSON(payloadJSON) {
-    const canvas = this.$canvas;
+  async setInfiniteCanvas(infiniteCanvasState) {
+    // const self = this;
     const canvasContainer = this.$canvasContainer;
-    const payload = JSON.parse(payloadJSON) || '';
-    console.log('sICJSON', payload, canvasContainer);
+    const {lastScale, width, height, canvas} = infiniteCanvasState;
 
-    canvas.loadFromJSON(payload.canvas, () => {
-      console.log('loaded?')
-      this.width = this.scaledWidth = payload.width;
-      this.height = this.scaledHeight = payload.height;
-      this.lastScale = payload.lastScale;
-      canvas.setWidth(payload.width);
-      canvas.setHeight(payload.height);
-      canvasContainer.width(payload.width).height(payload.height);
-      canvas.renderAll();
+    // console.log('sICJSON', payload, canvasContainer);
+
+    return new Promise((resolve, reject) => {
+      const savedCanvas = canvas;
+      if (savedCanvas) {
+        this.$canvas.loadFromJSON(savedCanvas, function() {
+          console.log('loaded?');
+          this.width = this.scaledWidth = width;
+          this.height = this.scaledHeight = height;
+          this.lastScale = lastScale;
+          this.$canvas.setWidth(width);
+          this.$canvas.setHeight(height);
+          canvasContainer.width(width).height(height);
+          this.$canvas.renderAll();
+          resolve();
+        });
+      } else {
+        console.log('payload empty?');
+        reject('payload empty?');
+      }
     });
   }
 
