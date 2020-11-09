@@ -204,24 +204,22 @@ class InfiniteCanvas {
    * @param infiniteCanvasState
    */
   async setInfiniteCanvas(infiniteCanvasState) {
-    // const self = this;
-    const canvasContainer = this.$canvasContainer;
+    const self = this;
     const {lastScale, width, height, canvas} = infiniteCanvasState;
 
     // console.log('sICJSON', payload, canvasContainer);
-
     return new Promise((resolve, reject) => {
       const savedCanvas = canvas;
       if (savedCanvas) {
         this.$canvas.loadFromJSON(savedCanvas, function() {
           console.log('loaded?');
-          this.width = this.scaledWidth = width;
-          this.height = this.scaledHeight = height;
-          this.lastScale = lastScale;
-          this.$canvas.setWidth(width);
-          this.$canvas.setHeight(height);
-          canvasContainer.width(width).height(height);
-          this.$canvas.renderAll();
+          self.width = self.scaledWidth = parseInt(width, 10);
+          self.height = self.scaledHeight = parseInt(height, 10);
+          self.lastScale = lastScale;
+          self.$canvas.setWidth(self.width);
+          self.$canvas.setHeight(self.height);
+          self.$canvasContainer.width(self.width).height(self.height);
+          self.$canvas.renderAll();
           resolve();
         });
       } else {
