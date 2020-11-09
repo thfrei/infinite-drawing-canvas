@@ -1,7 +1,7 @@
-import _throttle from './lib/lodash.throttle';
-import _debounce from './lib/lodash.debounce';
-import sleep from './lib/sleep';
-import deleteIcon from './lib/deleteIcon';
+import _throttle from './lib/lodash.throttle.js';
+import _debounce from './lib/lodash.debounce.js';
+import sleep from './lib/sleep.js';
+import deleteIcon from './lib/deleteIcon.js';
 
 var img = document.createElement('img');
 img.src = deleteIcon;
@@ -508,14 +508,14 @@ class InfiniteCanvas {
   /**
    * Crop the canvas to the surrounding box of all elements on the canvas
    *
-    Learnings: we must NOT use fabric.Group, since this messes with items and then
-    SVG export is scwed. Items coordinates are not set correctly!
-    fabric.Group(items).aCoords does NOT work.
-    Therefore we need to get bounding box ourselves
-    Note: Or maybe we can use group, destroy and readd everything afterwards:
-    http://fabricjs.com/manage-selection
-    https://gist.github.com/msievers/6069778#gistcomment-2030151
-    https://stackoverflow.com/a/31828460
+   Learnings: we must NOT use fabric.Group, since this messes with items and then
+   SVG export is scwed. Items coordinates are not set correctly!
+   fabric.Group(items).aCoords does NOT work.
+   Therefore we need to get bounding box ourselves
+   Note: Or maybe we can use group, destroy and readd everything afterwards:
+   http://fabricjs.com/manage-selection
+   https://gist.github.com/msievers/6069778#gistcomment-2030151
+   https://stackoverflow.com/a/31828460
    */
   async cropCanvas() {
     console.log('cropCanvas');
