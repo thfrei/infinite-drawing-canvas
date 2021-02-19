@@ -41,7 +41,12 @@ https://thfrei.github.io/infinite-drawing-canvas/
 
 ```
 npm version patch
+git push --follow-tags
 ```
+
+## Github Actions
+
+* `./.github/workflows/gh-pages.yml`: Create github pages in branch.
 
 # Credits
 

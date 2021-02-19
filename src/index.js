@@ -1,7 +1,8 @@
 import _throttle from './lib/lodash.throttle.js';
 import _debounce from './lib/lodash.debounce.js';
-import sleep from './lib/sleep.js';
+// import sleep from './lib/sleep.js';
 import deleteIcon from './lib/deleteIcon.js';
+import { fabric } from '../dist/assets/fabric.4.1.0.custom';
 
 var img = document.createElement('img');
 img.src = deleteIcon;
@@ -355,8 +356,7 @@ class InfiniteCanvas {
     console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
     // during pinch, we need to focus top left corner.
     // otherwise canvas might slip underneath the container and misalign.
-    let point = null;
-    point = new fabric.Point(0, 0);
+    let point = new fabric.Point(0, 0);
     // point = new fabric.Point(e.center.x, e.center.y);
     canvas.zoomToPoint(point, this.lastScale * e.scale);
   }

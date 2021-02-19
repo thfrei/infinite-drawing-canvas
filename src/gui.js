@@ -52,7 +52,7 @@ export const initButtons = (self) => {
     localStorage.setItem('infiniteCanvas', JSON.stringify(payload));
   });
 
-  refreshCanvas.on('click', async function () {
+  refreshCanvas.on('click', async () => {
     console.log('rC-oC');
     const infiniteCanvas = localStorage.getItem('infiniteCanvas') || '';
     // console.log('rcoc, inf', infiniteCanvas);
@@ -76,7 +76,7 @@ export const initButtons = (self) => {
   showSVG.on('click', () => {
     console.log('showSVG');
     const svg = self.$canvas.toSVG();
-    const imageSrc = `data:image/svg+xml;utf8,${svg}`;
+    //const imageSrc = `data:image/svg+xml;utf8,${svg}`;
     // $('#svgImage').html(`<img src="${imageSrc}" height="100" />`);
     $('#svgImage').html(`${svg}`);
   });
