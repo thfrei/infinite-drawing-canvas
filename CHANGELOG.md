@@ -7,13 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 * Pressure sensitive Brush: https://arch-inc.github.io/fabricjs-psbrush/
 * Path eraser that uses the actual path and not the bounding box
-* Other brushes like crayon.
+* Other brushes like crayon: https://github.com/tennisonchan/fabric-brush
 * Pen support for Firefox
 * Newest fabric version: 4.3.0 (currently 4.1.0)
 
-## [next]
+## [upcoming: 0.1.0]
 
-* 
+* [ ] Pens inside Canvas viewbox (or next to it) (draggable) 
+* [ ] build library and make it usable via api for trilium
 
 ## [0.0.6] - 2020-12-xx
 
