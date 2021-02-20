@@ -1,6 +1,6 @@
 
 # infinite-drawing-canvas
-Infinite canvas that allows drawing with pen and pinch zoom. It should feel more ore less like drawing in an app like OneNote, Krita or other, pen-enabled apps.
+Infinite canvas that allows drawing with pen and pinch zoom. It should feel more or less like drawing in an app like OneNote, Krita or other, pen-enabled apps.
 
 ## Demo: 
 
@@ -30,10 +30,7 @@ https://thfrei.github.io/infinite-drawing-canvas/
 
 ## Roadmap
 
-* Style Text
-* Add Links to Text, clickable with Mouse or Touch
-* Add basic shapes (Rectangle, Circle, Line, Ellipse, Star?)
-* Work on "infinity" (see \*)
+* see CHANGELOG.md
 
 # Development
 
@@ -47,6 +44,11 @@ git push --follow-tags
 ## Github Actions
 
 * `./.github/workflows/gh-pages.yml`: Create github pages in branch.
+
+## Known Issues
+
+* Pen not working in Firefox :-( - Changes in fabric.js necessary.
+* `webpack-cli` v4 not working. See: https://github.com/webpack/webpack-dev-server/issues/2029
 
 # Credits
 
