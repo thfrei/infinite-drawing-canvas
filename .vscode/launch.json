@@ -8,7 +8,7 @@
       "name": "Attach to Chrome",
       "port": 9222,
       "request": "attach",
-      "urlFilter": "http://localhost:8080/*",
+      "urlFilter": "https://8080-teal-gull-wofd5b5k.ws-eu03.gitpod.io/",
       "type": "pwa-chrome",
       "webRoot": "${workspaceFolder}/src"
     }

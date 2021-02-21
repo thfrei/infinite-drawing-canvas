@@ -1,5 +1,5 @@
 /*
-init function to activate mouseweheel and pinch zoom 
+init function to activate mouseweheel and pinch zoom
 */
     // Zoom (Mousewheel)
     // canvas.on('mouse:wheel', function (opt) {
