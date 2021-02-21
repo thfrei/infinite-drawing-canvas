@@ -181,3 +181,9 @@ export const initPens = (self) => {
     canvas.isDrawingMode = false;
   });
 };
+
+
+
+export const initMenu = (self) => {
+  $('#idc-menu').draggable();
+};

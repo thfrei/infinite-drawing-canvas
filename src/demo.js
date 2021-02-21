@@ -1,4 +1,4 @@
-import { initButtons, initPens } from './gui.js';
+import { initButtons, initPens, initMenu } from './gui.js';
 import { addBg, addDemoContent } from './utils.js';
 import { InfiniteCanvas, CanvasState } from './index.js';
 import _debounce from './lib/lodash.debounce';
@@ -24,6 +24,7 @@ setTimeout(() => {
   // Buttons
   initButtons(infiniteCanvas);
   initPens(infiniteCanvas);
+  initMenu(infiniteCanvas);
   // Set package.json version, passed via webpack
   $("#pkg-version").html(`v${PKG_VERSION}`);
 
