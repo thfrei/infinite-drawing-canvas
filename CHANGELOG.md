@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [ ] Pens inside Canvas viewbox (or next to it) (draggable) 
 * [ ] build library and make it usable via api for trilium
+* [ ] Publish to npm (make it consumable)
 
 ## [0.0.6] - 2020-12-xx
 
