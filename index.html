@@ -17,8 +17,13 @@
 </head>
 
 <body>
+  <h1>Infinite Drawing Canvas</h1>
+  <h4 id="pkg-version">vX.yy.zz</h4>
+
   <div id="parentContainer" class="note-detail-canvas-note note-detail-printable"
-    style="resize: both; overflow:auto; width: 800px; height: 350px; border: 4px double red;">
+    style="resize: both; overflow:auto; width: 900px; height: 450px; border: 4px double red;">
+    <div id="idc-menu"></div>
+
     <div id="canvasContainer" style="width: 1500px; height: 1500px;">
       <canvas id="c" class="canvasElement" style="border:1px solid #aaa; width: 1500px; height: 1500px"></canvas>
     </div>
@@ -67,7 +72,6 @@
     <button id="refresh-canvas" class="btn btn-info">Load from localStorage</button>
     <button id="show-svg" class="btn btn-info">Show SVG</button>
   </div>
-  <div id="pkg-version">vX.yy.zz</div>
 
   <div id="svgImage">
   </div>
