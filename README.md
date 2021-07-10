@@ -52,17 +52,21 @@ git push --follow-tags
 
 ## Fabric adaptions
 
-* Remove part where `jsdom` is required, which would allow to run fabric under node.js context. The jsdom dependency causes issues with webpack 5, since webpack 5 has no longer a polyfill for `node.js` stuff:
-  >>>
-  BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
-This is no longer the case. Verify if you need this module and configure a polyfill for it.
+* Custom build via: http://fabricjs.com/build/, 
+  * with all options except: Gestures, Named accessors (from default, this is plus Erasing)
+  * From built file remove: no options ticked (mainly window.fabric is unchecked)
+* Change `js`-file:
+  * Remove in code where `jsdom` is required, which would allow to run fabric under node.js context. The jsdom dependency causes issues with webpack 5, since webpack 5 has no longer a polyfill for `node.js` stuff:
+    ```
+    BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
+    This is no longer the case. Verify if you need this module and configure a polyfill for it.
 
-If you want to include a polyfill, you need to:
-        - add a fallback 'resolve.fallback: { "path": require.resolve("path-browserify") }'
-        - install 'path-browserify'
-If you don't want to include a polyfill, you can use an empty module like this:
-        resolve.fallback: { "path": false }
-  >>>
+    If you want to include a polyfill, you need to:
+          - add a fallback 'resolve.fallback: { "path": require.resolve("path-browserify") }'
+          - install 'path-browserify'
+    If you don't want to include a polyfill, you can use an empty module like this:
+          resolve.fallback: { "path": false }
+    ```
 
 # Credits
 
