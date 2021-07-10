@@ -317,9 +317,10 @@ class InfiniteCanvas {
         console.log('mdb touch');
         canvas.isDrawingMode = false;
         canvas.selection = false;
-        // unselect any possible targets (if you start the pan on an object)
+        // unselect any possible targets (if you start pan/pinch on an object)
         if (fabricEvent.target && canvas) {
           // source: https://stackoverflow.com/a/25535052
+          // this statement will throw an error saying that deactivateAll() is not a function. However, it IS!
           canvas.deactivateAll().renderAll();
         }
       }
@@ -454,8 +455,10 @@ class InfiniteCanvas {
   }
 
   /**
+   * recognizes input device
    *
    * @param {FabricPointerEvent} e
+   * @returns ['touch','pen','mouse']
    */
   recognizeInput(e) {
     const TOUCH = 'touch';
