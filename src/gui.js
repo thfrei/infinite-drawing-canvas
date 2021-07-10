@@ -185,5 +185,5 @@ export const initPens = (self) => {
 
 
 export const initMenu = (self) => {
-  $('#idc-menu').draggable();
+  //$('#idc-menu').draggable();
 };
