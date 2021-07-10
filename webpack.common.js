@@ -11,7 +11,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      jsdom: 'jsdom',
     }),
     new webpack.DefinePlugin({
       'process.env.PKG_VERSION': JSON.stringify(pkg.version),
@@ -21,7 +20,11 @@ module.exports = {
     jquery: 'jQuery',
     $: 'jQuery',
     fabric: 'fabric',
-    jsdom: 'jsdom',
+  },
+  resolve: {
+    fallback: {
+      "util": false,
+    },
   },
   output: {
     filename: '[name].bundle.js',
