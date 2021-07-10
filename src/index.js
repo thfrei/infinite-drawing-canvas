@@ -1,8 +1,11 @@
+import { fabric } from '../dist/assets/fabric.4.2.0.custom';
+import 'hammerjs'
+import '../dist/assets/jquery.hammer.js'
+
 import _throttle from './lib/lodash.throttle.js';
 import _debounce from './lib/lodash.debounce.js';
 // import sleep from './lib/sleep.js';
 import deleteIcon from './lib/deleteIcon.js';
-import { fabric } from '../dist/assets/fabric.4.1.0.custom';
 
 var img = document.createElement('img');
 img.src = deleteIcon;
