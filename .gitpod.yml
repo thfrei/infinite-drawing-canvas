@@ -1,7 +1,8 @@
 tasks:
   - before: nvm install 12 && nvm use 12
     init: npm ci
-x    command: npm run dev
+    # this command is needed for webpack hot reloading on gitpod
+    command: npm run dev -- --public "$(gp url 8080 | sed 's+https://++'):443"
 ports:
   - port: 8080
     onOpen: open-preview
