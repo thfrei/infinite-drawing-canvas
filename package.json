@@ -1,6 +1,6 @@
 {
   "name": "infinite-drawing-canvas",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "canvas that allows infinite drawing with stylus support and pressure sensitivity",
   "main": "index.js",
   "engines": {
