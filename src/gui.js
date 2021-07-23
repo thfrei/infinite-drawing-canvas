@@ -3,6 +3,9 @@ import EraserBrushPathFactory from './EraserBrushPath';
 
 /**
  * add listeners to buttons
+ * 
+ * requires jQuery
+ * ToDo: have buttons use vinalla js, add it inside the canvas
  */
 export const initButtons = (self) => {
   const canvas = self.$canvas;
