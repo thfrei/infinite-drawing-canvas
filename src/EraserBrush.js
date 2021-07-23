@@ -118,7 +118,7 @@ const EraserBrushFactory = (fabric) => {
         const img = new Image();
         img.src = erasedGroupDataURL;
         img.style.border = '1px dashed purple';
-        $('body').append(img.outerHTML);
+        document.getElementsByTagName("body")[0].appendChild(img);
         
         fabricImage.set({
           left: erasedGroup.left,
