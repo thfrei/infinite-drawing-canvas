@@ -113,8 +113,13 @@ const EraserBrushFactory = (fabric) => {
         // Be aware of async behavior!
         const fabricImage = await fabricImageFromURLPromise(erasedGroupDataURL);
         // TODO: If complete path was erased, remove canvas object completely! Right now, an empty image is added
-        console.log(eraserPath, erasedGroup, 'fabricimage', fabricImage);
-        console.image(erasedGroupDataURL);
+        console.log('eraserBrush for intersectedObject', eraserPath, erasedGroup, 'fabricimage', fabricImage, erasedGroupDataURL);
+        // for development, show images
+        const img = new Image();
+        img.src = erasedGroupDataURL;
+        img.style.border = '1px dashed purple';
+        $('body').append(img.outerHTML);
+        
         fabricImage.set({
           left: erasedGroup.left,
           top: erasedGroup.top,
