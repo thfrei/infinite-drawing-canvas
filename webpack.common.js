@@ -19,7 +19,6 @@ module.exports = {
   externals: {
     jquery: 'jQuery',
     $: 'jQuery',
-    fabric: 'fabric',
   },
   resolve: {
     fallback: {
