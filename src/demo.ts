@@ -1,7 +1,7 @@
 import { initButtons, initPens, initMenu } from './gui.js';
 import { addBg, addDemoContent } from './utils.js';
 import { InfiniteCanvas, CanvasState } from './index.js';
-import _debounce from './lib/lodash.debounce';
+import * as _debounce from './lib/lodash.debounce';
 
 const PKG_VERSION = process.env.PKG_VERSION
 

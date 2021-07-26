@@ -1,7 +1,6 @@
-import { fabric } from '../dist/assets/fabric.4.2.0.custom';
-import 'hammerjs'
-import '../dist/assets/jquery.hammer.js'
-import * as fabricTypes from '@types/fabric'
+import * as fabric from '../dist/assets/fabric.4.2.0.custom';
+import 'hammerjs';
+import '../dist/assets/jquery.hammer.js';
 
 import _throttle from './lib/lodash.throttle.js';
 import _debounce from './lib/lodash.debounce.js';
@@ -21,54 +20,54 @@ img.src = deleteIcon;
 Inspiration: https://stackoverflow.com/a/53917410
 https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
  */
-class CanvasState extends EventTarget {
-  constructor(initialState) {
-    super();
-    this.states = {
-      IDLE: 'idle',
-      INTERACTING: 'interacting',
-      DRAGGING: 'dragging',
-      PANNING: 'panning',
-      SELECTING: 'selecting',
-      PINCH_ZOOMING: 'pinch_zooming',
-      SELECTED: 'selected,',
-    };
+// class CanvasState extends EventTarget {
+//   constructor(initialState) {
+//     super();
+//     this.states = {
+//       IDLE: 'idle',
+//       INTERACTING: 'interacting',
+//       DRAGGING: 'dragging',
+//       PANNING: 'panning',
+//       SELECTING: 'selecting',
+//       PINCH_ZOOMING: 'pinch_zooming',
+//       SELECTED: 'selected,',
+//     };
 
-    this.currentState = initialState || this.state.IDLE;
+//     this.currentState = initialState || this.state.IDLE;
 
-    this.listeners = {};
-  }
+//     this.listeners = {};
+//   }
 
-  activate(state) {
-    if (this._isValidState(state)) {
-      this.currentState = state;
-      this.dispatchEvent(new Event(state));
-    } else {
-      throw new Error(`This is not a valid State: '${state}`);
-    }
-  }
+//   activate(state) {
+//     if (this._isValidState(state)) {
+//       this.currentState = state;
+//       this.dispatchEvent(new Event(state));
+//     } else {
+//       throw new Error(`This is not a valid State: '${state}`);
+//     }
+//   }
 
-  _isValidState(state) {
-    const statesArray = Object.values(this.states);
-    return statesArray.find(state);
-  }
+//   _isValidState(state) {
+//     const statesArray = Object.values(this.states);
+//     return statesArray.find(state);
+//   }
 
-  get() {
-    return this.currentState;
-  }
+//   get() {
+//     return this.currentState;
+//   }
 
-  getStates() {
-    return this.states;
-  }
-}
+//   getStates() {
+//     return this.states;
+//   }
+// }
 
 /**
  * Infinite Canvas
  */
 class InfiniteCanvas {
-  $canvas: fabricTypes.fabric.Canvas;
+  $canvas: fabric.Canvas;
   $parent: Object;
-  $canvasContainer: Object;
+  $canvasContainer: JQuery;
 
   canvasElement: any;
 
@@ -235,7 +234,7 @@ class InfiniteCanvas {
     const { lastScale, width, height, canvas } = infiniteCanvasState;
 
     // console.log('sICJSON', payload, canvasContainer);
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const savedCanvas = canvas;
       if (savedCanvas) {
         this.$canvas.loadFromJSON(savedCanvas, function () {
