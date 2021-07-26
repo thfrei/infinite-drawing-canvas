@@ -12,7 +12,7 @@
  * @param {Boolean} whether to execute at the beginning (`false`)
  * @api public
  */
-function debounce(func, wait, immediate){
+function debounce(func, wait, immediate = false){
   var timeout, args, context, timestamp, result;
   if (null == wait) wait = 100;
 

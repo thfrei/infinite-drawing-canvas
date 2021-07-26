@@ -26,7 +26,7 @@ setTimeout(() => {
   initPens(infiniteCanvas);
   initMenu(infiniteCanvas);
   // Set package.json version, passed via webpack
-  $("#pkg-version").html(`v${PKG_VERSION}`);
+  document.getElementById("#pkg-version").innerHTML = `v${PKG_VERSION}`;
 
   // After Render
   function afterRender() {

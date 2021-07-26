@@ -1,7 +1,7 @@
 import { fabric } from '../dist/assets/fabric.4.2.0.custom';
 import 'hammerjs'
 import '../dist/assets/jquery.hammer.js'
-import '@types/fabric'
+import * as fabricTypes from '@types/fabric'
 
 import _throttle from './lib/lodash.throttle.js';
 import _debounce from './lib/lodash.debounce.js';
@@ -66,24 +66,28 @@ class CanvasState extends EventTarget {
  * Infinite Canvas
  */
 class InfiniteCanvas {
-  $canvas: Object;
+  $canvas: fabricTypes.fabric.Canvas;
   $parent: Object;
   $canvasContainer: Object;
 
-  isDragging: Boolean;
-  selection: Boolean;
-  lastPosX: Number;
-  lastPosY: Number;
-  startPosX: Number;
-  startPosY: Number;
-  lastScale: Number;
+  canvasElement: any;
+
+  isDragging: boolean;
+  selection: boolean;
+  lastPosX: number;
+  lastPosY: number;
+  startPosX: number;
+  startPosY: number;
+  lastScale: number;
   fonts: Array<String>;
-  width: Number;
-  height: Number;
+  width: number;
+  height: number;
   drawWithTouch: boolean;
-  scaledWidth: Number;
-  scaledHeight: Number;
-  activatePlaceTextBox: Boolean;
+  scaledWidth: number;
+  scaledHeight: number;
+  activatePlaceTextBox: boolean;
+
+  hammer: any;
 
   constructor($canvas, $parent, $canvasContainer) {
     this.$canvas = $canvas;
