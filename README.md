@@ -8,7 +8,7 @@ https://thfrei.github.io/infinite-drawing-canvas/
 
 ## Video:
 
-![demo](doc/idc-demo-2.gif)
+![demo](docs/assets/idc-demo-2.gif)
 
 ## Try / Contribute:
 
