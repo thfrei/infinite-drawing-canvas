@@ -1,4 +1,5 @@
-import * as fabric from '../dist/assets/fabric.4.2.0.custom';
+// import * as fabric from '../dist/assets/fabric.4.2.0.custom';
+import { fabric } from 'fabric';
 import 'hammerjs';
 import '../dist/assets/jquery.hammer.js';
 
@@ -66,7 +67,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
  */
 class InfiniteCanvas {
   $canvas: fabric.Canvas;
-  $parent: Object;
+  $parent: JQuery;
   $canvasContainer: JQuery;
 
   canvasElement: any;
@@ -145,7 +146,7 @@ class InfiniteCanvas {
     });
   }
 
-  renderIcon(ctx, left, top, styleOverride, fabricObject) {
+  renderIcon(this: fabric.IObjectOptions, ctx, left, top, styleOverride, fabricObject) {
     var size = this.cornerSize;
     ctx.save();
     ctx.translate(left, top);
@@ -376,7 +377,7 @@ class InfiniteCanvas {
     canvas.isDrawingMode = false;
   }
 
-  handlePinch(e) {
+  handlePinch(e: HammerListener) {
     console.log('hp', e);
     const canvas = this.$canvas;
     console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
