@@ -7,6 +7,17 @@ module.exports = {
   entry: {
     app: './src/demo.ts',
   },
+  devtool: 'inline-source-map',
+  entry: './src/index.ts',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
   plugins: [
     new webpack.ProvidePlugin({
       $: 'jquery',
@@ -24,6 +35,7 @@ module.exports = {
     fallback: {
       "util": false,
     },
+    extensions: [ '.tsx', '.ts', '.js' ],
   },
   output: {
     filename: '[name].bundle.js',

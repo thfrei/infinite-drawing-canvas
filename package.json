@@ -46,6 +46,7 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
+    "@types/fabric": "^4.5.1",
     "hammerjs": "2.0.8"
   }
 }
