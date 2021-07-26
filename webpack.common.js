@@ -5,7 +5,7 @@ console.log(pkg.version);
 
 module.exports = {
   entry: {
-    app: './src/demo.js',
+    app: './src/demo.ts',
   },
   plugins: [
     new webpack.ProvidePlugin({
