@@ -180,8 +180,7 @@ class InfiniteCanvas {
     this.hammer.add([pinch, pan]);
 
     // Zoom (Pinch)
-    // FIXME: not working
-    // Problem: Somehow eraser planes from matched do not overlay and then do not erase
+    // throttle to make sure, device is not overly used
     this.hammer.on('pinchmove', _throttle(this.handlePinch, 20));
     // the pinchend call must be debounced, since a pinchmove event might
     // occur after a couple of ms after the actual pinchend event. With the
@@ -191,7 +190,7 @@ class InfiniteCanvas {
 
     // Move Canvas
     this.hammer.on('panstart', this.handlePanStart);
-    this.hammer.on('pan', this.handlePanning);
+    this.hammer.on('pan', _throttle(this.handlePanning, 20));
     this.hammer.on('panend', this.handlePanEnd);
 
     canvas.transformCanvas = this.transformCanvas;
@@ -371,11 +370,8 @@ class InfiniteCanvas {
     console.log('hp', e);
     const canvas = this.$canvas;
     console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
-    // during pinch, we need to focus top left corner.
-    // otherwise canvas might slip underneath the container and misalign.
-    let point = new fabric.Point(0, 0);
-    // point = new fabric.Point(e.center.x, e.center.y);
-    canvas.zoomToPoint(point, this.lastScale * e.scale);
+    canvas.setZoom(this.lastScale * e.scale);
+
   }
 
   handlePinchEnd(e) {
