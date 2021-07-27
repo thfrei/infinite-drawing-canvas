@@ -188,7 +188,11 @@ export const initPens = (self) => {
   $('#img-url').val(window.location.origin + '/samples/sample1.png');
   $('#img-add').on('click', () => {
     fabric.Image.fromURL($('#img-url').val(), function(img) {
-      canvas.add(img.set({ left: 250, top: 250, angle: 30 }).scale(0.25));
+      img.set({ left: 250, top: 250, angle: 30});
+      img.hasControls = true;
+      img.scale(0.5);
+      img.selectable = true;
+      canvas.add(img);
     });
   })
 

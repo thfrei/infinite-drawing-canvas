@@ -1,4 +1,12 @@
-import { fabric } from '../dist/assets/fabric.4.2.0.custom';
+// no controls
+// import { fabric } from '../dist/assets/fabric.4.2.0.custom';
+// import {fabric} from '../dist/assets/fabric.4.4.0-custom-init';
+
+// controls, but no selection of path, only in groups
+// import {fabric} from '../dist/assets/fabric.4.5.1'; 
+import {fabric} from '../dist/assets/fabric.4.5.1.min'; 
+// import {fabric} from '../dist/assets/fabric.4.4.0'; 
+
 import 'hammerjs'
 import '../dist/assets/jquery.hammer.js'
 
@@ -9,6 +17,8 @@ import deleteIcon from './lib/deleteIcon.js';
 
 var img = document.createElement('img');
 img.src = deleteIcon;
+
+console.log('fabric version', fabric.version);
 
 /**
  * Class of all valid Infinite Canvas States
@@ -147,11 +157,13 @@ class InfiniteCanvas {
     const self = this;
     const canvas = new fabric.Canvas(canvasElement, {
       isDrawingMode: false,
-      allowTouchScrolling: true,
-      transparentCorners: false,
-      hasControls: true,
+      // allowTouchScrolling: true,
+      // transparentCorners: false,
+      // hasControls: true,
     });
     this.$canvas = canvas;
+    fabric.Object.prototype.selectable = true;
+    fabric.Object.prototype.hasControls = true;
     // fabric.Object.prototype.transparentCorners = false;
 
     // Resizing
@@ -298,7 +310,7 @@ class InfiniteCanvas {
   handlePointerEventBefore(fabricEvent) {
     const canvas = this.$canvas;
     const inputType = this.recognizeInput(fabricEvent.e);
-    console.log('mdb', fabricEvent, fabricEvent.e, 'inputType', inputType);
+    console.log('mdb', 'fabricEvent', fabricEvent, fabricEvent.e, 'inputType', inputType);
     // place text box independent of touch type
     if (this.activatePlaceTextBox) {
       if (fabricEvent && fabricEvent.absolutePointer) {
@@ -334,7 +346,7 @@ class InfiniteCanvas {
       canvas.isDrawingMode = true;
     } else if (inputType === 'mouse') {
       // draw with mouse
-      console.log('mdb mouse, draw');
+      console.log('mdb mouse, do nothing');
     } else {
       console.log('mdb input type not recognized!');
       throw new Error('input type not recognized!');
