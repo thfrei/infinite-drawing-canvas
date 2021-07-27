@@ -149,6 +149,7 @@ class InfiniteCanvas {
       isDrawingMode: false,
       allowTouchScrolling: true,
       transparentCorners: false,
+      hasControls: true,
     });
     this.$canvas = canvas;
     // fabric.Object.prototype.transparentCorners = false;

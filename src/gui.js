@@ -1,5 +1,6 @@
 import EraserBrushFactory from './EraserBrush';
 import EraserBrushPathFactory from './EraserBrushPath';
+import { fabric } from '../dist/assets/fabric.4.2.0.custom';
 
 /**
  * add listeners to buttons
@@ -182,6 +183,34 @@ export const initPens = (self) => {
   $('#text-1').on('click', () => {
     self.activatePlaceTextBox = true;
     canvas.isDrawingMode = false;
+  });
+
+  $('#img-url').val(window.location.origin + '/samples/sample1.png');
+  $('#img-add').on('click', () => {
+    fabric.Image.fromURL($('#img-url').val(), function(img) {
+      canvas.add(img.set({ left: 250, top: 250, angle: 30 }).scale(0.25));
+    });
+  })
+
+  var group = [];
+  $('#img-add-svg').on('click', () => {
+    fabric.loadSVGFromURL(
+      $('#img-url').val(),
+      function(objects,options) {
+        var loadedObjects = new fabric.Group(group);
+        loadedObjects.set({
+                left: 100,
+                top: 100,
+        });
+        canvas.add(loadedObjects);
+        canvas.renderAll();
+        group = [];
+      },
+      function(item, object) {
+              object.set('id',item.getAttribute('id'));
+              group.push(object);
+      }
+    );
   });
 };
 

@@ -15,6 +15,26 @@ function addDemoContent(canvas) {
   canvas.add(demoLine);
 }
 
+function addRect(canvas) {
+  var rect = new fabric.Rect({
+    left: 150,
+    top: 200,
+    originX: 'left',
+    originY: 'top',
+    width: 150,
+    height: 120,
+    angle: -10,
+    fill: 'rgba(255,0,0,0.5)',
+    transparentCorners: false,
+    hasControls: true,
+  });
+  rect.setControlsVisibility({
+    mtr: true,
+  })
+
+  canvas.add(rect).setActiveObject(rect);
+}
+
 function addBg(canvas) {
   // Add BG
   var bg = new fabric.Rect({
@@ -43,4 +63,5 @@ function addBg(canvas) {
 export {
     addBg,
     addDemoContent,
+    addRect,
 };

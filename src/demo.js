@@ -1,5 +1,5 @@
 import { initButtons, initPens, initMenu } from './gui.js';
-import { addBg, addDemoContent } from './utils.js';
+import { addBg, addDemoContent, addRect } from './utils.js';
 import { InfiniteCanvas, CanvasState } from './index.js';
 import _debounce from './lib/lodash.debounce';
 
@@ -18,8 +18,9 @@ setTimeout(() => {
   canvas.setWidth(myCanvas.width);
   canvas.setHeight(myCanvas.height);
 
-  // addDemoContent(canvas);
-  // addBg(canvas);
+  addDemoContent(canvas);
+  addBg(canvas);
+  addRect(canvas);
 
   // Buttons
   initButtons(infiniteCanvas);
