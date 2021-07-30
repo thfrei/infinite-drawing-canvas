@@ -1,41 +1,22 @@
 import { initButtons, initPens, initMenu } from './gui.js';
 import { addBg, addDemoContent } from './utils.js';
-import { IDC } from './index.js';
-import * as _debounce from './lib/lodash.debounce';
+import { IDC } from './index';
 
 const PKG_VERSION = process.env.PKG_VERSION
 
 // just skip one cycle, so we can make sure, all other libraries are loaded!
 setTimeout(() => {
-  const myCanvas = new IDC(
-    $('.canvasElement').get(),
-    $('#parentContainer').get(),
-    $('#canvasContainer').get(),
+  const idc = new IDC(
+    // @ts-ignore
+    document.getElementById("c"),
+    document.getElementById("parentContainer"),
+    document.getElementById("canvasContainer"),
   );
 
-  // const infiniteCanvas = myCanvas.initFabric();
-  // const canvas = infiniteCanvas.$canvas;
+  console.log("hi");
 
-  // canvas.setWidth(myCanvas.width);
-  // canvas.setHeight(myCanvas.height);
-
-  // // addDemoContent(canvas);
-  // // addBg(canvas);
-
-  // Buttons
-  initButtons(infiniteCanvas);
-  initPens(infiniteCanvas);
-  initMenu(infiniteCanvas);
   // Set package.json version, passed via webpack
-  document.getElementById("#pkg-version").innerHTML = `v${PKG_VERSION}`;
-
-  // After Render
-  function afterRender() {
-    console.log('after:render outside, call a save function or what not');
-  }
-  canvas.on('after:render', _debounce(afterRender, 1000));
+  document.getElementById("pkg-version").innerHTML = `v${PKG_VERSION}`;
 
   // add access to window, for debugging purposes.
-  window.fabric = fabric;
-  window.myCanvas = canvas;
 });

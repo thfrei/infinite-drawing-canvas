@@ -6,8 +6,8 @@ const prettierOptions = JSON.parse(
 );
 
 module.exports = {
-  extends: ['prettier'],
-  plugins: ['prettier'],
+  // extends: ['pretr'],tier'],
+  //   // plugins: ['prettie
   env: {
     jest: true,
     browser: true,

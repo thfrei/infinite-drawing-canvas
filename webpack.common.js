@@ -8,7 +8,6 @@ module.exports = {
     app: './src/demo.ts',
   },
   devtool: 'inline-source-map',
-  entry: './src/index.ts',
   module: {
     rules: [
       {

@@ -9,7 +9,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "webpack-dev-server --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
+    "build": "webpack --config webpack.gh-pages-example.js",
+    "typedoc": "node typedoc-config-create.js",
     "github-action": "act --secret-file .secrets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
