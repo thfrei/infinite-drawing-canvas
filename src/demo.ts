@@ -1,25 +1,26 @@
 import { initButtons, initPens, initMenu } from './gui.js';
 import { addBg, addDemoContent } from './utils.js';
-import { InfiniteCanvas, CanvasState } from './index.js';
+import { IDC } from './index.js';
 import * as _debounce from './lib/lodash.debounce';
 
 const PKG_VERSION = process.env.PKG_VERSION
 
 // just skip one cycle, so we can make sure, all other libraries are loaded!
 setTimeout(() => {
-  const myCanvas = new InfiniteCanvas(
-    $('.canvasElement'),
-    $('#parentContainer'),
-    $('#canvasContainer'),
+  const myCanvas = new IDC(
+    $('.canvasElement').get(),
+    $('#parentContainer').get(),
+    $('#canvasContainer').get(),
   );
-  const infiniteCanvas = myCanvas.initFabric();
-  const canvas = infiniteCanvas.$canvas;
 
-  canvas.setWidth(myCanvas.width);
-  canvas.setHeight(myCanvas.height);
+  // const infiniteCanvas = myCanvas.initFabric();
+  // const canvas = infiniteCanvas.$canvas;
 
-  // addDemoContent(canvas);
-  // addBg(canvas);
+  // canvas.setWidth(myCanvas.width);
+  // canvas.setHeight(myCanvas.height);
+
+  // // addDemoContent(canvas);
+  // // addBg(canvas);
 
   // Buttons
   initButtons(infiniteCanvas);

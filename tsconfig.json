@@ -11,6 +11,10 @@
       "DOM",
       "DOM.Iterable",
       "ES2015"
-    ]
-  }
+    ],
+    "typeRoots": [
+      "customTypes"
+    ],
+    "esModuleInterop": true,
+  },
 }
