@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [ ] Publish to npm (make it consumable)
 
 ## unreleased
-* ...
+* complete rewrite in typescript
 
 ## [0.0.9]
 * remove the need to include external dependencies in index.html (except jQuery for now)

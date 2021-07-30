@@ -1,14 +1,11 @@
-import { initButtons, initPens, initMenu } from './gui.js';
-import { addBg, addDemoContent } from './utils.js';
-import { IDC } from './index';
+import { InfiniteDrawingCanvas } from './index';
 
 const PKG_VERSION = process.env.PKG_VERSION
 
 // just skip one cycle, so we can make sure, all other libraries are loaded!
 setTimeout(() => {
-  const idc = new IDC(
-    // @ts-ignore
-    document.getElementById("c"),
+  const idc = new InfiniteDrawingCanvas(
+    document.getElementById("c") as HTMLCanvasElement,
     document.getElementById("parentContainer"),
     document.getElementById("canvasContainer"),
   );

@@ -1,17 +1,17 @@
 import { fabric } from '../dist/assets/fabric';
 import 'hammerjs';
 
-class IDC {
-  $canvas: fabric.Canvas;
-  $canvasDiv: HTMLElement;
-  $parentDiv: HTMLElement;
+class InfiniteDrawingCanvas {
+  canvas: fabric.Canvas;
+  CanvasContainer: HTMLElement;
+  EditorContainer: HTMLElement;
 
-  constructor($canvas: HTMLCanvasElement, $canvasDiv: HTMLElement, $parentDiv: HTMLElement) {
-    this.$canvas = new fabric.Canvas($canvas, {
+  constructor(canvas: HTMLCanvasElement, CanvasContainer: HTMLElement, EditorContainer: HTMLElement) {
+    this.canvas = new fabric.Canvas(canvas, {
       isDrawingMode: true,
     });
     return this;
   }
 }
 
-export { IDC };
+export { InfiniteDrawingCanvas };

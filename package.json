@@ -33,8 +33,10 @@
   },
   "homepage": "https://github.com/thfrei/infinite-drawing-canvas#readme",
   "devDependencies": {
+    "@types/fabric": "^4.5.1",
     "@types/hammerjs": "^2.0.40",
     "@types/jquery": "^3.5.6",
+    "@types/source-map": "0.5.2",
     "clean-webpack-plugin": "3.0.0",
     "copy-webpack-plugin": "9.0.1",
     "eslint": "7.30.0",
@@ -51,7 +53,6 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
-    "@types/fabric": "^4.5.1",
     "hammerjs": "2.0.8",
     "lodash": "4.17.21"
   }

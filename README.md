@@ -43,7 +43,7 @@ git push --follow-tags
 
 ## Github Actions
 
-* `./.github/workflows/gh-pages.yml`: Create github pages in branch.
+* `./.github/workflows/gh-pages.yml`: Create github pages in branch `gh-pages`. Build demo to `./example`.
 
 ## Known Issues
 
@@ -52,10 +52,7 @@ git push --follow-tags
 
 ## Fabric adaptions
 
-* Custom build via: http://fabricjs.com/build/, 
-  * with all options except: Gestures, Named accessors (from default, this is plus Erasing)
-  * From built file remove: no options ticked (mainly window.fabric is unchecked)
-* Change `js`-file:
+* Custom build via: https://github.com/thfrei/fabric.js/tree/idc `node build.js modules=ALL exclude=gestures minifier=yui`
   * Remove in code where `jsdom` is required, which would allow to run fabric under node.js context. The jsdom dependency causes issues with webpack 5, since webpack 5 has no longer a polyfill for `node.js` stuff:
     ```
     BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
@@ -83,4 +80,3 @@ git push --follow-tags
 * Samples of Text-Editing: https://jsfiddle.net/gislef/Lvfpq57h/
 * PoC of Connectors and Ports for Diagrams with fabric: https://robferguson.org/blog/2016/01/21/adding-support-for-ports-and-connectors-to-fabric-js/
   * https://github.com/Robinyo/my-2d-diagram-editor
-* 
