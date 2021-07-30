@@ -3,8 +3,8 @@ import { fabric } from 'fabric';
 import 'hammerjs';
 import '../dist/assets/jquery.hammer.js';
 
-import * as _throttle from './lib/lodash.throttle.js';
-import * as _debounce from './lib/lodash.debounce.js';
+import _throttle from './lib/lodash.throttle.js';
+import _debounce from './lib/lodash.debounce.js';
 // import sleep from './lib/sleep.js';
 import deleteIcon from './lib/deleteIcon.js';
 
@@ -12,9 +12,60 @@ var img = document.createElement('img');
 img.src = deleteIcon;
 
 /**
- * Infinite Drawing Canvas
+ * Class of all valid Infinite Canvas States
+ *
+ * usage:
+ * const canvasState = new CanvasState();
+ * canvasState.on('selecting', ()=>{});
+ * canvasState.activate('selecting');
+Inspiration: https://stackoverflow.com/a/53917410
+https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
  */
-class IDC {
+// class CanvasState extends EventTarget {
+//   constructor(initialState) {
+//     super();
+//     this.states = {
+//       IDLE: 'idle',
+//       INTERACTING: 'interacting',
+//       DRAGGING: 'dragging',
+//       PANNING: 'panning',
+//       SELECTING: 'selecting',
+//       PINCH_ZOOMING: 'pinch_zooming',
+//       SELECTED: 'selected,',
+//     };
+
+//     this.currentState = initialState || this.state.IDLE;
+
+//     this.listeners = {};
+//   }
+
+//   activate(state) {
+//     if (this._isValidState(state)) {
+//       this.currentState = state;
+//       this.dispatchEvent(new Event(state));
+//     } else {
+//       throw new Error(`This is not a valid State: '${state}`);
+//     }
+//   }
+
+//   _isValidState(state) {
+//     const statesArray = Object.values(this.states);
+//     return statesArray.find(state);
+//   }
+
+//   get() {
+//     return this.currentState;
+//   }
+
+//   getStates() {
+//     return this.states;
+//   }
+// }
+
+/**
+ * Infinite Canvas
+ */
+class InfiniteCanvas {
   $canvas: fabric.Canvas;
   $parent: JQuery;
   $canvasContainer: JQuery;
@@ -39,9 +90,70 @@ class IDC {
   hammer: any;
 
   constructor($canvas, $parent, $canvasContainer) {
+    this.$canvas = $canvas;
+    this.$canvasContainer = $canvasContainer;
+    this.$parent = $parent;
 
+    // Canvas
+    this.isDragging;
+    this.selection;
+    this.lastPosX;
+    this.lastPosY;
+    this.startPosX = 0;
+    this.startPosY = 0;
+    this.lastScale = 1;
+    this.fonts = [
+      'Times New Roman',
+      'Arial',
+      'Verdana',
+      'Calibri',
+      'Consolas',
+      'Comic Sans MS',
+    ];
+    this.width = this.scaledWidth = 1500; //px
+    this.height = this.scaledHeight = 1500; //px
+    this.drawWithTouch = false;
+    this.activatePlaceTextBox = false;
+
+    // bind methods to this
+    this.handlePointerEventBefore = this.handlePointerEventBefore.bind(this);
+    this.resizeCanvas = this.resizeCanvas.bind(this);
+    this.handlePinch = this.handlePinch.bind(this);
+    this.handlePinchEnd = this.handlePinchEnd.bind(this);
+    this.handlePanStart = this.handlePanStart.bind(this);
+    this.handlePanning = this.handlePanning.bind(this);
+    this.handlePanEnd = this.handlePanEnd.bind(this);
+    this.transformCanvas = this.transformCanvas.bind(this);
+    this.resetZoom = this.resetZoom.bind(this);
+    this.cropCanvas = this.cropCanvas.bind(this);
+    this.placeTextBox = this.placeTextBox.bind(this);
+    this.getInfiniteCanvas = this.getInfiniteCanvas.bind(this);
+    this.setInfiniteCanvas = this.setInfiniteCanvas.bind(this);
+    this.overrideFabric = this.overrideFabric.bind(this);
   }
 
+  overrideFabric() {
+    const self = this;
+
+    fabric.Object.prototype.controls.deleteControl = new fabric.Control({
+      x: 0.5,
+      y: -0.5,
+      offsetY: 16,
+      cursorStyle: 'pointer',
+      mouseUpHandler: self.deleteObject,
+      render: self.renderIcon,
+      cornerSize: 24,
+    });
+  }
+
+  renderIcon(this: fabric.IObjectOptions, ctx, left, top, styleOverride, fabricObject) {
+    var size = this.cornerSize;
+    ctx.save();
+    ctx.translate(left, top);
+    ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
 
   deleteObject(eventData, target) {
     var canvas = target.canvas;
@@ -144,6 +256,67 @@ class IDC {
     });
   }
 
+  /**
+   *
+   * @param {string} direction [top, left, right, bottom]
+   * @param {float} distance distance in px
+   */
+  transformCanvas(direction, distance) {
+    console.log('transforming', direction, distance);
+    const canvas = this.$canvas;
+    this.resetZoom();
+
+    const items = canvas.getObjects();
+
+    // Move all items, so that it seems canvas was added on the outside
+    for (let i = 0; i < items.length; i++) {
+      const item = canvas.item(i).setCoords();
+      console.log('tc, item', item);
+      if (direction === 'top') {
+        // move all down
+        item.top = item.top + distance;
+      }
+      if (direction === 'left') {
+        // move all to the right
+        item.left = item.left + distance;
+      }
+    }
+
+    let newWidth = this.scaledWidth,
+      newHeight = this.scaledHeight;
+
+    if (direction === 'top' || direction === 'bottom') {
+      newHeight = this.scaledHeight + distance;
+    } else if (direction === 'left' || direction === 'right') {
+      newWidth = this.scaledWidth + distance;
+    }
+    this.scaledWidth = this.width = newWidth;
+    this.scaledHeight = this.height = newHeight;
+    canvas.setWidth(newWidth);
+    canvas.setHeight(newHeight);
+
+    this.$canvasContainer.width(newWidth).height(newHeight);
+
+    canvas.renderAll();
+    console.log('called tc', direction, distance);
+  }
+
+  resetZoom() {
+    const canvas = this.$canvas;
+
+    // zoom level of canvas
+    canvas.setZoom(1);
+    // width of
+    canvas.setWidth(this.width);
+    canvas.setHeight(this.height);
+    // reset scale, so that for next pinch we start with "fresh" values
+    this.scaledWidth = this.width;
+    this.scaledHeight = this.height;
+    this.lastScale = 1;
+    // set div container of canvas
+    this.$canvasContainer.width(this.width).height(this.height);
+  }
+
   handlePointerEventBefore(fabricEvent) {
     const canvas = this.$canvas;
     const inputType = this.recognizeInput(fabricEvent.e);
@@ -188,6 +361,31 @@ class IDC {
       console.log('mdb input type not recognized!');
       throw new Error('input type not recognized!');
     }
+  }
+
+  placeTextBox(x, y) {
+    const canvas = this.$canvas;
+    canvas.add(
+      new fabric.IText('Tap and Type', {
+        fontFamily: 'Arial',
+        // fontWeith: '200',
+        fontSize: 15,
+        left: x,
+        top: y,
+      }),
+    );
+    canvas.isDrawingMode = false;
+  }
+
+  handlePinch(e: HammerListener) {
+    console.log('hp', e);
+    const canvas = this.$canvas;
+    console.log('pinch', e, 'pinchingi scale', this.lastScale, e.scale);
+    // during pinch, we need to focus top left corner.
+    // otherwise canvas might slip underneath the container and misalign.
+    let point = new fabric.Point(0, 0);
+    // point = new fabric.Point(e.center.x, e.center.y);
+    canvas.zoomToPoint(point, this.lastScale * e.scale);
   }
 
   handlePinchEnd(e) {
@@ -254,6 +452,25 @@ class IDC {
     console.log('panend', e);
 
     if (e.pointerType === 'touch') {
+      // take momentum of panning to do it once panning is finished
+      // let deltaX = e.deltaX;
+      // let deltaY = e.deltaY;
+      // for(let v = Math.abs(e.overallVelocity); v>0; v=v-0.1) {
+      //   if (deltaX > 0) {
+      //     deltaX = e.deltaX + e.deltaX * v;
+      //   } else {
+      //     deltaX = e.deltaX - e.deltaX * v;
+      //   }
+      //   deltaY = e.deltaY + e.deltaY * v;
+      //   const newEvent = {...e, overallVelocity: v, deltaX, deltaY};
+      //   console.log('vel', v, deltaX, deltaY, newEvent);
+      //   this.handlePanning(newEvent);
+      //   await this.sleep(1000);
+      // }
+
+      // on mouse up we want to recalculate new interaction
+      // for all objects, so we call setViewportTransform
+      // canvas.setViewportTransform(canvas.viewportTransform);
       canvas.isDragging = false;
       canvas.selection = true;
 
@@ -302,6 +519,67 @@ class IDC {
       console.log('recognizeInput', MOUSE);
       return MOUSE;
     }
+  }
+
+  // detect parent div size change
+  resizeCanvas() {
+    const canvas = this.$canvas;
+    const width = this.$parent.width();
+    const height = this.$parent.height();
+    console.log(`setting canvas to ${width} x ${height}px`);
+    // canvas.setWidth(width);
+    // canvas.setHeight(height);
+    canvas.setWidth(1500);
+    canvas.setHeight(1500);
+    canvas.renderAll();
+  }
+
+  /**
+   * Crop the canvas to the surrounding box of all elements on the canvas
+   *
+   Learnings: we must NOT use fabric.Group, since this messes with items and then
+   SVG export is scwed. Items coordinates are not set correctly!
+   fabric.Group(items).aCoords does NOT work.
+   Therefore we need to get bounding box ourselves
+   Note: Or maybe we can use group, destroy and readd everything afterwards:
+   http://fabricjs.com/manage-selection
+   https://gist.github.com/msievers/6069778#gistcomment-2030151
+   https://stackoverflow.com/a/31828460
+   */
+  async cropCanvas() {
+    console.log('cropCanvas');
+    const canvas = this.$canvas;
+
+    // get all objects
+    const items = canvas.getObjects();
+    // get maximum bounding rectangle of all objects
+    const bound = { tl: { x: Infinity, y: Infinity }, br: { x: 0, y: 0 } };
+    for (let i = 0; i < items.length; i++) {
+      // focus on tl/br;
+      const item = items[i];
+      const tl = item.aCoords.tl;
+      const br = item.aCoords.br;
+      console.log('cC, item', tl, br);
+      if (tl.x < bound.tl.x) {
+        bound.tl.x = tl.x;
+      }
+      if (tl.y < bound.tl.y) {
+        bound.tl.y = tl.y;
+      }
+      if (br.x > bound.br.x) {
+        bound.br.x = br.x;
+      }
+      if (br.y > bound.br.y) {
+        bound.br.y = br.y;
+      }
+    }
+    console.log('cC, bounds:', bound);
+
+    // cut area on all sides
+    this.transformCanvas('left', -bound.tl.x);
+    this.transformCanvas('top', -bound.tl.y);
+    this.transformCanvas('right', -(this.width - bound.br.x + bound.tl.x));
+    this.transformCanvas('bottom', -(this.height - bound.br.y + bound.tl.y));
   }
 }
 

@@ -1,11 +1,16 @@
 {
-    "compilerOptions": {
-      "outDir": "./dist/",
-      "sourceMap": true,
-      "noImplicitAny": true,
-      "module": "es6",
-      "target": "es5",
-      "jsx": "react",
-      "allowJs": true
-    }
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2015"
+    ]
   }
+}
