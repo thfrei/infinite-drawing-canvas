@@ -11,14 +11,16 @@
   <h1>Infinite Drawing Canvas</h1>
   <h4 id="pkg-version">vX.yy.zz</h4>
 
-  <div id="parentContainer" class="note-detail-canvas-note note-detail-printable"
-    style="resize: both; overflow:auto; width: 900px; height: 450px; border: 4px double red;">
-    <div id="canvasContainer" style="width: 1500px; height: 1500px;">
-      <canvas id="c" class="canvasElement" style="border:1px solid #aaa; width: 1500px; height: 1500px"></canvas>
-    </div>
-    <br />
+<!--  <div id="parentContainer" class="note-detail-canvas-note note-detail-printable"-->
+<!--    style="resize: both; overflow:auto; width: 900px; height: 450px; border: 4px double red;">-->
+<!--    <div id="canvasContainer" style="width: 1500px; height: 1500px;">-->
+<!--      <canvas id="c" class="canvasElement" style="border:1px solid #aaa; width: 1500px; height: 1500px"></canvas>-->
+<!--    </div>-->
+<!--    <br />-->
+<!--  </div>-->
+  <div style="position: absolute">
+    <div id="idc" />
   </div>
-
   <div id="pens-and-markers">
     Drawing:
     <button id="undo" disabled><i class='bx bx-undo'></i></button>
@@ -54,16 +56,14 @@
     <button id="crop-canvas" class="btn btn-info"><i class='bx bx-crop'></i></button>
 
   </div>
-  <div style="display: inline;">
+  <div>
     <button id="zoom-100" class="btn btn-info">Zoom 100%</button>
     <button id="clear-canvas" class="btn btn-info">Clear</button>
     <button id="save-canvas" class="btn btn-info">Save to localStorage</button>
     <button id="refresh-canvas" class="btn btn-info">Load from localStorage</button>
     <button id="show-svg" class="btn btn-info">Show SVG</button>
   </div>
-
-  <div id="svgImage">
-  </div>
+  <div id="svgImage"></div>
 </body>
 
 </html>
