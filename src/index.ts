@@ -1,17 +1,40 @@
 import { fabric } from '../dist/assets/fabric';
 import 'hammerjs';
 
+const enum DrawingMode {
+  Line,
+  Rectangle,
+  Oval,
+  Text,
+  Polyline,
+  Path,
+  Pencil,
+  Eraser,
+  PathEraser
+}
+
+const enum CursorMode {
+  Draw,
+  Select
+}
+
 class InfiniteDrawingCanvas {
-  fabric: fabric.Canvas;
-  canvasElement: HTMLCanvasElement;
-  CanvasContainer: HTMLElement;
-  EditorContainer: HTMLElement;
+  private fabric: fabric.Canvas;
+  private canvasElement: HTMLCanvasElement;
+  private CanvasContainer: HTMLElement;
+  private Tools: HTMLElement;
+  private EditorContainer: HTMLElement;
+
+  private cursorMode: CursorMode = CursorMode.Draw;
 
   constructor(initialDiv: HTMLElement) {
     this.EditorContainer = initialDiv;
     this.canvasElement = document.createElement('canvas');
     this.CanvasContainer = document.createElement('div');
+    this.Tools = document.createElement('div');
+
     this.CanvasContainer.appendChild(this.canvasElement);
+    this.EditorContainer.appendChild(this.Tools);
     this.EditorContainer.appendChild(this.CanvasContainer);
 
     // add scrollbars if inner canvas gets bigger (infinite inner canvas)
@@ -22,6 +45,8 @@ class InfiniteDrawingCanvas {
       isDrawingMode: true,
       selection: false,
     });
+
+    this.initTools();
 
     return this;
   }
@@ -45,6 +70,31 @@ class InfiniteDrawingCanvas {
     this.canvasElement.height = height;
     this.fabric.setHeight(height);
   }
+
+  setDrawingMode(drawingMode: boolean) {
+    this.fabric.isDrawingMode = drawingMode;
+  }
+
+  initTools() {
+    const self = this;
+    const cursor = document.createElement('button');
+    cursor.onclick = (ev) => {
+      self.setDrawingMode(false);
+    };
+    cursor.innerHTML = '<i class="bx bx-pointer"></i>';
+    cursor.className = 'btn btn-info';
+    this.Tools.appendChild(cursor);
+
+    const pen = document.createElement('button');
+    pen.onclick = (ev) => {
+      self.setDrawingMode(true);
+    };
+    pen.innerHTML = '<i class="bx bx-pencil" style="border-left: 3px solid black"></i>';
+    pen.className = 'btn btn-info';
+
+    this.Tools.appendChild(pen);
+  }
+
 }
 
 export { InfiniteDrawingCanvas };

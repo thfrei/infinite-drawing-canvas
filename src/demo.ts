@@ -14,8 +14,6 @@ setTimeout(() => {
   idc.setHeightEditor(400);
   idc.setWidthEditor(800);
 
-  console.log("hi");
-
   // Set package.json version, passed via webpack
   document.getElementById("pkg-version").innerHTML = `v${PKG_VERSION}`;
 
