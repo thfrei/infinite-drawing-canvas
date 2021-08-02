@@ -18,6 +18,10 @@ const enum CursorMode {
   Select
 }
 
+/**
+ * Infinite Drawing Canvas Class
+ *
+ */
 class InfiniteDrawingCanvas {
   private fabric: fabric.Canvas;
   private canvasElement: HTMLCanvasElement;
@@ -51,30 +55,83 @@ class InfiniteDrawingCanvas {
     return this;
   }
 
+  /**
+   * css height of editor div (editor is the visual input area)
+   *
+   * @param height
+   */
   setHeightEditor(height: number) {
     this.EditorContainer.style.height = `${height}px`;
   }
 
+  /**
+   * css width of editor div
+   *
+   * @param width
+   */
   setWidthEditor(width: number) {
     this.EditorContainer.style.width = `${width}px`;
   }
 
+  /**
+   * width of css container, canvas element and fabric.
+   *
+   * the canvas may be bigger than the editor and
+   *
+   * @param width
+   */
   setWidthCanvas(width: number) {
     this.CanvasContainer.style.width = `${width}px`;
     this.canvasElement.width = width;
     this.fabric.setWidth(width);
   }
 
+  /**
+   * width of css container, canvas element and fabric.
+   *
+   * the canvas may be bigger than the editor and
+   *
+   * @param height
+   */
   setHeightCanvas(height: number) {
     this.CanvasContainer.style.height = `${height}px`;
     this.canvasElement.height = height;
     this.fabric.setHeight(height);
   }
 
+  /**
+   * When true, mouse events on canvas (mousedown/mousemove/mouseup) result in free drawing.
+   * After mousedown, mousemove creates a shape, and then mouseup finalizes it and adds an instance of `fabric.Path` onto canvas.
+   * (source: http://fabricjs.com/docs/fabric.Canvas.html)
+   * @param drawingMode
+   */
   setDrawingMode(drawingMode: boolean) {
     this.fabric.isDrawingMode = drawingMode;
   }
 
+  /**
+   * Indicates whether group selection should be enabled
+   * (source: http://fabricjs.com/docs/fabric.Canvas.html)
+   *
+   * @param selectionMode
+   */
+  setSelectionMode(selectionMode: boolean) {
+    this.fabric.selection = selectionMode;
+  }
+
+  enableDrawingMode() {
+    this.setDrawingMode(true);
+    this.setSelectionMode(false);
+  }
+
+  enableSelectionMode() {
+    this.setDrawingMode(false);
+    this.setSelectionMode(true);
+  }
+
+  /**
+   * todo: convert tools into separate class!?
+   */
   initTools() {
     const self = this;
     const cursor = document.createElement('button');
