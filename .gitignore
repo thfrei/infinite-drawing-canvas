@@ -8,7 +8,7 @@ stats.json
 .DS_Store
 npm-debug.log
 .idea
-docs
+docs/typedoc
 
 # Personal
 .secrets
