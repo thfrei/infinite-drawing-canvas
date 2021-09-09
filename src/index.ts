@@ -1,5 +1,6 @@
 import { fabric } from '../dist/assets/fabric';
-import 'hammerjs';
+import * as Hammer from 'hammerjs';
+import {throttle, debounce} from 'lodash';
 
 const enum DrawingMode {
   Line,
@@ -15,7 +16,21 @@ const enum DrawingMode {
 
 const enum CursorMode {
   Draw,
-  Select
+  Select,
+  Pan,
+  Pinch,
+  Zoom
+}
+
+interface Coordinates {
+  x: number,
+  y: number,
+}
+
+const enum Device {
+  Touch,
+  Pen,
+  Mouse
 }
 
 /**
@@ -28,27 +43,56 @@ class InfiniteDrawingCanvas {
   private CanvasContainer: HTMLElement;
   private Tools: HTMLElement;
   private EditorContainer: HTMLElement;
+  private hammer: HammerManager;
 
-  private cursorMode: CursorMode = CursorMode.Draw;
+  private cursorMode: CursorMode = CursorMode.Select;
 
+  private panningStart: Coordinates = {x: 0, y: 0};
+
+  /**
+   * Constructor needs only one div as HTMLElement (not Jquery-Selector) and will
+   * create all other needed HTML ELements (div, canvas)
+   *
+   * @param initialDiv
+   */
   constructor(initialDiv: HTMLElement) {
     this.EditorContainer = initialDiv;
     this.canvasElement = document.createElement('canvas');
     this.CanvasContainer = document.createElement('div');
     this.Tools = document.createElement('div');
 
+    this.EditorContainer.parentNode.appendChild(this.Tools);
     this.CanvasContainer.appendChild(this.canvasElement);
-    this.EditorContainer.appendChild(this.Tools);
     this.EditorContainer.appendChild(this.CanvasContainer);
 
     // add scrollbars if inner canvas gets bigger (infinite inner canvas)
     this.EditorContainer.style.overflow = 'auto';
+    // resize only for debugging
     this.EditorContainer.style.resize = 'both';
 
     this.fabric = new fabric.Canvas(this.canvasElement, {
       isDrawingMode: true,
       selection: false,
     });
+
+    // add Pinch & Pan
+    this.hammer = new Hammer.Manager(this.fabric.upperCanvasEl);
+    const pinch = new Hammer.Pinch();
+    const pan = new Hammer.Pan();
+    this.hammer.add([pinch, pan]);
+    // Zoom (Pinch)
+    // throttle to make sure, device is not overly used
+    this.hammer.on('pinchmove', throttle(this.handlePinchMove, 20));
+    // the pinchend call must be debounced, since a pinchmove event might
+    // occur after a couple of ms after the actual pinchend event. With the
+    // debounce, it is garuanted, that this.lastScale and the scale for the
+    // next pinch zoom is set correctly
+    this.hammer.on('pinchend', debounce(this.handlePinchEnd, 200));
+
+    // Move Canvas
+    this.hammer.on('panstart', this.handlePanStart);
+    this.hammer.on('pan', throttle(this.handlePan, 20));
+    this.hammer.on('panend', this.handlePanEnd);
 
     this.initTools();
 
@@ -134,23 +178,95 @@ class InfiniteDrawingCanvas {
    */
   initTools() {
     const self = this;
+
+    const width = '30px';
+    this.Tools.style.width = width
+
     const cursor = document.createElement('button');
     cursor.onclick = (ev) => {
-      self.setDrawingMode(false);
+      self.enableSelectionMode();
     };
     cursor.innerHTML = '<i class="bx bx-pointer"></i>';
     cursor.className = 'btn btn-info';
+    cursor.style.width = width
     this.Tools.appendChild(cursor);
 
     const pen = document.createElement('button');
     pen.onclick = (ev) => {
-      self.setDrawingMode(true);
+      self.enableDrawingMode();
     };
     pen.innerHTML = '<i class="bx bx-pencil" style="border-left: 3px solid black"></i>';
     pen.className = 'btn btn-info';
+    pen.style.width = width
 
     this.Tools.appendChild(pen);
   }
+
+  handlePinchMove() {
+
+  }
+
+  handlePinchEnd() {
+
+  }
+
+  handlePanStart = (e: HammerInput) => {
+    console.log('handlePanStart', e);
+    if (e.pointerType === 'touch') {
+      this.cursorMode = CursorMode.Pan;
+    } else {
+      this.cursorMode = CursorMode.Draw;
+    }
+
+    if (this.cursorMode === CursorMode.Pan) {
+      this.cursorMode = CursorMode.Pan;
+      this.setSelectionMode(false);
+      this.setDrawingMode(false);
+
+      this.panningStart = {
+        x: this.EditorContainer.scrollLeft,
+        y: this.EditorContainer.scrollTop
+      };
+      console.log('handlePanStart', this, this.panningStart);
+    }
+  }
+
+  handlePan = (e) => {
+    if (this.cursorMode === CursorMode.Pan) {
+      const panMultiplier = 1.0;
+      const dx = this.panningStart.x - e.deltaX * panMultiplier;
+      const dy = this.panningStart.y - e.deltaY * panMultiplier;
+      this.EditorContainer.scrollLeft = dx;
+      this.EditorContainer.scrollTop = dy;
+      this.fabric.requestRenderAll();
+    }
+  }
+
+  handlePanEnd() {
+
+  }
+
+}
+
+class InputDevice {
+  private device: Device;
+
+  recognizeDevice = (e: HammerInput) => {
+    if (e.pointerType === 'pen') {
+      this.device = Device.Pen;
+    } else if (e.pointerType === 'touch') {
+      this.device = Device.Touch;
+    } else if (e.pointerType === 'mouse') {
+      this.device = Device.Mouse;
+    }
+  }
+
+  get = () => {
+    return this.device;
+  }
+}
+
+class InputHandler {
 
 }
 
