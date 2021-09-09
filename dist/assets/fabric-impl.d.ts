@@ -1914,6 +1914,11 @@ export interface Canvas extends StaticCanvas {}
 export interface Canvas extends ICanvasOptions {}
 export class Canvas {
     /**
+     *  Canvas Element for object selection
+     */
+    upperCanvasEl: HTMLCanvasElement;
+
+    /**
      * Constructor
      * @param element <canvas> element to initialize instance on
      * @param [options] Options object
