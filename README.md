@@ -3,7 +3,7 @@
 
 Infinite canvas that allows drawing with pen and pinch zoom. It should feel more or less like drawing in an app like OneNote, Krita or other, pen-enabled apps.
 
-**Important: infinite-drawing-canvas is no longer actively developed. Development stopped in favor of using the open-source library: https://github.com/excalidraw/excalidraw**
+**Important: development for infinite-drawing-canvas stalled. You might want to consider using the open-source library: https://github.com/excalidraw/excalidraw**
 
 ## Demo: 
 
